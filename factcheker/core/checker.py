@@ -2,9 +2,10 @@ import os
 from groq import Groq
 
 PROMPT_SYSTEM = """
-Generate key words for a given text for search engine optimization (SEO) purposes.
+Generate key words to find against the given content.
 Maximum number of key words: 10
 No extra information is needed.
+Format: key1, key2, key3, ...
 """
 
 client = Groq(
