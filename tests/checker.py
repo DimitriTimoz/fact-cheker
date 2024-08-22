@@ -97,4 +97,11 @@ def search_key_words(key_words):
     print(google_search(" ".join(key_words), os.environ.get("GOOGLE_API"), "51c58602312b440ef"))
 
 
-    
+s = """
+l'incursion de l'Ukraine dans Koursk en Russie est l'opération la plus injustifiée, en termes de coût, de l'histoire du 21ème siècle.
+"""
+
+a = """
+
+"""
+print(read_article_and_give_review(s, a))
