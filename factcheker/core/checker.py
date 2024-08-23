@@ -14,12 +14,13 @@ relevent_selectors = {
 }
 
 PROMPT_SYSTEM = """
-Generate the most relevant and precise keywords for fact-checking the provided content. Focus on capturing key topics, claims, and entities that are essential for verifying the accuracy of the information.
+Generate the most relevant keywords for fact-checking the provided content. Focus on capturing key topics, claims, and entities that are essential for verifying the accuracy of the information.
+Choose the appropriate language. For exemple, if the content concerns a country use the language of that country.
 Instructions:
-- Limit the output to a maximum of 10 keywords.
+- few keywords
 - Ensure that each keyword is distinct and directly related to fact-checking the content.
 - No additional information or explanation is required.
-Output format: keyword1, keyword2, keyword3, …
+Output format: keyword1, keyword2, …
 """
 
 client = Groq(
@@ -99,11 +100,14 @@ def read_article_and_give_review(statement, article):
 # TODO: Work when JS is required
 # TODO: Detect non-article pages
 def get_website_content(url):
-    response = requests.get(url)
+    response = requests.get(url, timeout=5)
     
     domain = url.split("/")[2]
     domain = domain.split(".")[-2] + "." + domain.split(".")[-1]
     
+    # Check is html thanks to the content
+    if not response.text.startswith("<!DOCTYPE html>"):
+        return ""
     soup = BeautifulSoup(response.text, 'html.parser')
     
 
@@ -140,17 +144,20 @@ def google_search(query: str, api_key: str, cse_id: str, num=10):
     #    'num': num,
     #}
     #response = requests.get(url, params=params)
-    
-    items = service.cse().list(
-            q=query, #Search words
-            cx=cse_id,  #CSE Key
-            num=num
-        ).execute().get("items")
-
-    articles = []
-    for item in items:
-        articles.append(Article(item["title"], item["link"]))
-    return articles
+    try:
+        resp = service.cse().list(
+                q=query, #Search words
+                cx=cse_id,  #CSE Key
+                num=num
+            ).execute()
+        items = resp["items"]
+        articles = []
+        for item in items:
+            articles.append(Article(item["title"], item["link"]))
+        return articles
+    except Exception as e:
+        print(e)
+        return []
   
 def search_key_words(key_words: List[str]):
     return google_search(" ".join(key_words), os.environ.get("GOOGLE_API"), "51c58602312b440ef")
@@ -160,14 +167,33 @@ def fact_check(statement: str):
     keywords = generate_key_words(statement)
     search_results = search_key_words(keywords)
     
+    reviews = []
+    i = 0
     for result in search_results:
+        if i >= 5:
+            break
         print(result.url)
         content = get_website_content(result.url)
-        if len(content) > 10000:
+        if len(content) > 100_000 or len(content) < 50:
+            print("content too long or too short", len(content))
             continue
-        review = read_article_and_give_review(statement, content)
-        print(review)
-s = """
-Un sachet de couleur blanche est tombé du pantalon de Nancy Pelosi alors qu'elle entrait sur scène pour son discours à la convention du DNC.
-"""
-print(fact_check(s))
+        review = read_article_and_give_review(statement, content).strip()
+        
+        review_state = False
+        if review.startswith("True"):
+            review_state = True
+        review = review.removeprefix("True")
+        review = review.removeprefix("False")
+        reviews.append({
+            "state": review_state,
+            "url": result.url,
+            "review": review.strip(),
+        })
+        i += 1
+    return reviews
+        
+if __name__ == "__main__":    
+    s = """
+    Un sachet de couleur blanche est tombé du pantalon de Nancy Pelosi alors qu'elle entrait sur scène pour son discours à la convention du DNC.
+    """
+    print(fact_check(s))

@@ -7,4 +7,8 @@ from .checker import *
 @api_view(['POST'])
 def fact_check_view(request):
     content = request.data.get('content')
-    return Response(generate_key_words(content), status=status.HTTP_200_OK)
+    result = {
+        "content": content,
+        "reviews": fact_check(content),
+    }
+    return Response(result, status=status.HTTP_200_OK)
