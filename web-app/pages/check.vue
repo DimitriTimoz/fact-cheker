@@ -1,11 +1,12 @@
 <template>
     <div class="container lg mx-auto center">
-        <textarea class="text-text bg-transparent center border-2 w-full" 
+        <textarea class="text-text bg-transparent center border-2 w-full mt-5 px-1" 
                     placeholder="The statement..."
                     @change="check"
                     v-model="value">
         </textarea>
         <button class="btn" @click="check">Check</button>
+        <button class="btn ml-2" @click="clear">Clear</button>
         <div v-if="review.fetched">
             <p>Conclusion: {{ review.conclusion }}</p>
         </div>
@@ -28,6 +29,15 @@ const review = ref({
     reviews: [] as string[]
 })
 
+function clear() {
+    value.value = '';
+    review.value = {
+        fetched: false,
+        conclusion: '',
+        reviews: []
+    }
+}
+
 async function check() {
 
     const response: ReviewResponse = await $fetch<ReviewResponse>('http://localhost:8000/check/', {
@@ -45,7 +55,6 @@ async function check() {
         conclusion: data.conclusion,
         reviews: data.reviews
     }
-
 }
 
 </script>

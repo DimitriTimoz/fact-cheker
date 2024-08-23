@@ -10,15 +10,10 @@
         </nav>
     </header>
     <div class="mainContent">
-            <slot />
-        </div>
-        <footer>
-            <h1>Footer</h1>
-        </footer>
-
+        <slot />
+    </div>
+    <footer>
+    </footer>
 </template>
 <style>
-    .btn {
-        @apply text-text;
-    }
 </style>
