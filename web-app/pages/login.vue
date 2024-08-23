@@ -24,7 +24,7 @@
           required
         />
   
-        <button @click.prevent="login" class="button">Login</button>
+        <button @click.prevent="login" class="btn">Login</button>
       </div>
     </div>
   </template>

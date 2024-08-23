@@ -19,7 +19,7 @@
                 name="psw"
                 required
             />
-            <button @click.prevent="register" class="button">Register</button>
+            <button @click.prevent="register" class="btn">Register</button>
         </div>
     </form>
 </template>
