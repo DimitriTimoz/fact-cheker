@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .checker import *
+from core.checker import fact_check
 
 @api_view(['POST'])
 def fact_check_view(request):
