@@ -1,6 +1,14 @@
 import os
 from groq import Groq
 import requests
+from bs4 import BeautifulSoup
+
+relevent_selectors = {
+    "theguardian.com" : [".article-body-commercial-selector"],
+    "lemonde.fr" : ["article", "#post-container"],
+    "nytimes.com": ["section[name=articleBody]"],
+    "washingtonpost.com": ["article"],
+}
 
 PROMPT_SYSTEM = """
 Generate key words to find against the given content.
@@ -75,11 +83,37 @@ def read_article_and_give_review(statement, article):
                 "content": input_data,
             }
         ],
-        model="llama-3.1-70b-versatile",
+        model="mixtral-8x7b",
     )
     
     chat_completion = chat_completion.choices[0].message.content
     return chat_completion
+    
+# TODO: Add error handling
+# TODO: Work when JS is required
+# TODO: Detect non-article pages
+def get_website_content(url):
+    response = requests.get(url)
+    
+    domain = url.split("/")[2]
+    domain = domain.split(".")[-2] + "." + domain.split(".")[-1]
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+
+    # Keep only the relevant elements
+    if domain in relevent_selectors:
+        text = ""
+        for selector in relevent_selectors[domain]:
+            for element in soup.select(selector):
+                text += element.get_text()
+        return text
+    else:
+        # Remove all non-article elements
+        for script in soup(["script", "style", "header", "footer", "nav", "aside", "form", "noscript"]):
+            script.decompose()
+
+        return soup.get_text()
     
 def google_search(query, api_key, cse_id, num=10):
     url = f"https://www.googleapis.com/customsearch/v1"
@@ -97,4 +131,11 @@ def search_key_words(key_words):
     print(google_search(" ".join(key_words), os.environ.get("GOOGLE_API"), "51c58602312b440ef"))
 
 
-    
+s = """
+l'incursion de l'Ukraine dans Koursk en Russie est l'opération la plus injustifiée, en termes de coût, de l'histoire du 21ème siècle.
+"""
+
+a = """
+
+"""
+print(get_website_content("https://www.washingtonpost.com/politics/2024/08/23/kamala-harris-gaza-stance-palestinians-dnc/"))
