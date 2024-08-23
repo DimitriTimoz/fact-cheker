@@ -1,7 +1,9 @@
 import os
+from typing import List
 from groq import Groq
 import requests
 from bs4 import BeautifulSoup
+from googleapiclient.discovery import build
 
 relevent_selectors = {
     "theguardian.com" : [".article-body-commercial-selector"],
@@ -83,7 +85,7 @@ def read_article_and_give_review(statement, article):
                 "content": input_data,
             }
         ],
-        model="mixtral-8x7b",
+        model="llama3-groq-70b-8192-tool-use-preview",
     )
     
     chat_completion = chat_completion.choices[0].message.content
@@ -115,27 +117,50 @@ def get_website_content(url):
 
         return soup.get_text()
     
-def google_search(query, api_key, cse_id, num=10):
-    url = f"https://www.googleapis.com/customsearch/v1"
-    params = {
-        'q': query,
-        'key': api_key,
-        'cx': cse_id,
-        'num': num,
-    }
-    response = requests.get(url, params=params)
-    return response.json()
-  
-def search_key_words(key_words):
+service = build("customsearch", "v1",
+        developerKey=os.environ.get("GOOGLE_API"))
+
+class Article:
+    title: str
+    url: str
+    def __init__(self, title, url):
+        self.title = title
+        self.url = url
+
+def google_search(query: str, api_key: str, cse_id: str, num=10):
+    #url = f"https://www.googleapis.com/customsearch/v1"
+    #params = {
+    #    'q': query,
+    #    'key': api_key,
+    #    'cx': cse_id,
+    #    'num': num,
+    #}
+    #response = requests.get(url, params=params)
     
-    print(google_search(" ".join(key_words), os.environ.get("GOOGLE_API"), "51c58602312b440ef"))
+    items = service.cse().list(
+            q=query, #Search words
+            cx=cse_id,  #CSE Key
+            num=num
+        ).execute().get("items")
+
+    articles = []
+    for item in items:
+        articles.append(Article(item["title"], item["link"]))
+    return articles
+  
+def search_key_words(key_words: List[str]):
+    return google_search(" ".join(key_words), os.environ.get("GOOGLE_API"), "51c58602312b440ef")
 
 
+def fact_check(statement: str):
+    keywords = generate_key_words(statement)
+    search_results = search_key_words(keywords)
+    
+    for result in search_results:
+        content = get_website_content(result.url)
+        review = read_article_and_give_review(statement, content)
+        print(review)
 s = """
 l'incursion de l'Ukraine dans Koursk en Russie est l'opération la plus injustifiée, en termes de coût, de l'histoire du 21ème siècle.
 """
-
-a = """
-
-"""
-print(get_website_content("https://www.washingtonpost.com/politics/2024/08/23/kamala-harris-gaza-stance-palestinians-dnc/"))
+print(fact_check(s))
