@@ -10,13 +10,16 @@ relevent_selectors = {
     "lemonde.fr" : ["article", "#post-container"],
     "nytimes.com": ["section[name=articleBody]"],
     "washingtonpost.com": ["article"],
+    "lepoint.fr": ["article"],
 }
 
 PROMPT_SYSTEM = """
-Generate key words to find against the given content.
-Maximum number of key words: 10
-No extra information is needed.
-Format: key1, key2, key3, ...
+Generate the most relevant and precise keywords for fact-checking the provided content. Focus on capturing key topics, claims, and entities that are essential for verifying the accuracy of the information.
+Instructions:
+- Limit the output to a maximum of 10 keywords.
+- Ensure that each keyword is distinct and directly related to fact-checking the content.
+- No additional information or explanation is required.
+Output format: keyword1, keyword2, keyword3, …
 """
 
 client = Groq(
@@ -45,6 +48,7 @@ def generate_key_words(content):
     keywords = chat_completion.split(",")[:10]
     keywords = [keyword.strip() for keyword in keywords]
     search_key_words(keywords)
+    print("keywords", keywords)
     return keywords
 
 
@@ -157,10 +161,13 @@ def fact_check(statement: str):
     search_results = search_key_words(keywords)
     
     for result in search_results:
+        print(result.url)
         content = get_website_content(result.url)
+        if len(content) > 10000:
+            continue
         review = read_article_and_give_review(statement, content)
         print(review)
 s = """
-l'incursion de l'Ukraine dans Koursk en Russie est l'opération la plus injustifiée, en termes de coût, de l'histoire du 21ème siècle.
+Un sachet de couleur blanche est tombé du pantalon de Nancy Pelosi alors qu'elle entrait sur scène pour son discours à la convention du DNC.
 """
 print(fact_check(s))
