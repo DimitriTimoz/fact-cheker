@@ -23,3 +23,20 @@ def register(request):
     user.save()
     print(user.username, "registered")
     return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    
+    # Check if the email is already used
+    if not User.objects.filter(email=email).exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    user = User.objects.get(email=email)
+    if not user.check_password(password):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # Set session
+    request.session['user_id'] = user.id
+    return Response(status=status.HTTP_200_OK)
