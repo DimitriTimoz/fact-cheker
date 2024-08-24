@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@types/http-proxy-middleware": "^1.0.0",
     "nuxt": "^3.13.0",
     "vue": "latest"
   },

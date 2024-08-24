@@ -108,7 +108,7 @@ here the statement
 REVIEWS //// REVIEWS
 here are the reviews
 Output format:
-A conclusion about the statement.
+A conclusion about the statement and the explanation.
 """
 
 def draw_conclusion(statement, reviews):

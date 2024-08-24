@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -24,10 +23,14 @@ def register(request):
     user = User.objects.create_user(username=email, password=password, email=email)
     user.save()
     print(user.username, "registered")
+    
+    # Login the user
+    django_request = request._request
+    login(django_request, user)
+    
     return Response(status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
-@csrf_exempt # TODO: Remove this line
 def login_view(request: Request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -44,6 +47,6 @@ def login_view(request: Request):
     return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-def logout(request):
+def logout_view(request):
     logout(request)
     return Response(status=status.HTTP_200_OK)

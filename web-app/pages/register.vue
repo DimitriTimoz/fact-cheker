@@ -37,7 +37,7 @@ const user = ref({
 });
 
 const register = async () => {
-    $fetch('http://localhost:8000/register/', {
+    $fetch('/api/register/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

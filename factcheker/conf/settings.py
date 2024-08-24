@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -56,6 +56,7 @@ CORS_ALLOW_ALL_ORIGINS = True # Only for development
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000', # Only for development
+    'http://localhost:8000', # Only for development
 ]
 ROOT_URLCONF = 'conf.urls'
 

@@ -1,6 +1,6 @@
 <template>
     <div class="container lg mx-auto center">
-        <textarea class="text-text bg-transparent center border-2 w-full mt-5 px-1" 
+        <textarea class="text-text bg-transparent center w-full mt-5 px-1 outline-blue-500 border-2 border-primary rounded-lg"
                     placeholder="The statement..."
                     @change="check"
                     v-model="value">
@@ -39,12 +39,14 @@ function clear() {
 }
 
 async function check() {
-
-    const response: ReviewResponse = await $fetch<ReviewResponse>('http://localhost:8000/check/', {
+    const csrf = useCookie('csrftoken');
+    const response: ReviewResponse = await $fetch<ReviewResponse>('/api/check/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrf.value || ''
         },
+
         body: JSON.stringify({ content: value.value })
     });
 
