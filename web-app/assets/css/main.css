@@ -3,5 +3,13 @@
 @tailwind utilities;
 
 .btn {
-    @apply bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors duration-300 ease-in-out;
+    @apply bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors duration-300 ease-in-out cursor-pointer w-fit;
+}
+
+.text-input {
+    @apply border border-gray-300 rounded px-3 py-2 mb-2;
+}
+
+.input-label {
+    @apply block text-gray-700 text-sm font-bold mb-2;
 }

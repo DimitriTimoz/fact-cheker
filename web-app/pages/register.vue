@@ -1,25 +1,28 @@
 <template>
+    <div class="center">
+        <h2 class="center">Register</h2>
+    </div>
     <form method="post">
-        <div class="container form">
-            <label for="uname"><b>Email</b></label>
+        <div class="container form flex flex-col mx-auto">
+            <label for="email"><b>Email</b></label>
             <input
                 v-model="user.email"
                 type="email"
-                class="input"
+                class="text-input"
                 placeholder="Enter email"
-                name="uemail"
+                name="email"
                 required
             />
             <label for="psw"><b>Password</b></label>
             <input
                 v-model="user.password"
                 type="password"
-                class="input"
+                class="text-input"
                 placeholder="Enter Password"
                 name="psw"
                 required
             />
-            <button @click.prevent="register" class="btn">Register</button>
+            <button @click.prevent="register" class="btn mt-2">Register</button>
         </div>
     </form>
 </template>
@@ -40,7 +43,8 @@ const register = async () => {
     $fetch('/api/register/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "X-CSRFToken": useCookie('csrftoken').value || ''
         },
         body: JSON.stringify(user.value)
     });

@@ -1,31 +1,31 @@
 <template>
     <div>
-      <div class="title">
-        <h2>Login</h2>
+      <div class="center">
+        <h2 class="center">Login</h2>
       </div>
-      <div class="container form">
-        <label for="uname"><b>Email</b></label>
+      <form class="container form flex flex-col mx-auto">
+        <label class="input-label"  for="email"><b>Email</b></label>
         <input
           v-model="user.email"
           type="email"
-          class="input"
+          class="text-input"
           placeholder="Enter Email"
-          name="uname"
+          name="email"
           required
         />
   
-        <label for="psw"><b>Password</b></label>
+        <label class="input-label" for="psw"><b>Password</b></label>
         <input
           v-model="user.password"
           type="password"
-          class="input"
+          class="text-input"
           placeholder="Enter Password"
           name="psw"
           required
         />
   
-        <button @click.prevent="login" class="btn">Login</button>
-      </div>
+        <button @click.prevent="login" class="btn mt-2">Login</button>
+      </form>
     </div>
   </template>
   <script lang="ts" setup>
@@ -40,6 +40,7 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        "X-CSRFToken": useCookie('csrftoken').value || ''
       },
       body: JSON.stringify(user.value),
     });
