@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-screen justify-between">
         <header class="bg-background text-text border-b border-primary p-2">
-            <nav class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl" aria-label="Global">
+            <nav class="flex flex-wrap justify-between items-center" aria-label="Global">
                 <div class="flex items-center ml-2 text-xl">
                     <img src="~/assets/logo.svg" alt="logo" class="h-10 w-10 mr-2" />
                     <nuxt-link to="/">Fact cheker</nuxt-link>
