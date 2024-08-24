@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="container mx-auto max-w-sm">
       <div class="center">
-        <h2 class="center">Login</h2>
+        <h2 class="center title text-text text-xl">Log in</h2>
       </div>
       <form class="container form flex flex-col mx-auto">
         <label class="input-label"  for="email"><b>Email</b></label>
@@ -23,8 +23,10 @@
           name="psw"
           required
         />
-  
-        <button @click.prevent="login" class="btn mt-2">Login</button>
+        <div class="flex justify-end">
+          <nuxt-link to="/register" class="text-text hover:scale-110 transition-all font-medium rounded-lg text-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2">Register</nuxt-link>
+          <button @click.prevent="login" class="btn">Log in</button>
+        </div>
       </form>
     </div>
   </template>
