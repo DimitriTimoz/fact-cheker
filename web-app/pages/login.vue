@@ -27,6 +27,10 @@
           <nuxt-link to="/register" class="text-text hover:scale-110 transition-all font-medium rounded-lg text-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2">Register</nuxt-link>
           <button @click.prevent="login" class="btn">Log in</button>
         </div>
+
+        <div v-if="user.message" class="mt-5 alert" role="alert">
+          <span>{{ user.message }}</span>
+        </div>
       </form>
     </div>
   </template>
@@ -34,6 +38,7 @@
   const user = ref({
     email: '',
     password: '',
+    message: ''
   });
   
   const login = async () => {

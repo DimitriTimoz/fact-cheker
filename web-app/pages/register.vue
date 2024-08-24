@@ -13,6 +13,7 @@
                     placeholder="Enter email"
                     name="email"
                     required
+                    @change="check"
                 />
                 <label for="psw"><b>Password</b></label>
                 <input
@@ -22,6 +23,7 @@
                     placeholder="Enter Password"
                     name="psw"
                     required
+                    @change="check"
                 />
 
                 <label for="confirm-psw"><b>Confirm Password</b></label>
@@ -32,10 +34,15 @@
                     placeholder="Confirm Password"
                     name="confirm-psw"
                     required
+                    @change="check"
                 />
                 <div class="flex justify-end">
                     <nuxt-link to="/login" class="text-text hover:scale-110 transition-all font-medium rounded-lg text-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2">Log in</nuxt-link>
                     <button @click.prevent="register" class="btn">Register</button>
+                </div>
+
+                <div v-if="message" class="mt-5 alert" role="alert">
+                    <span>{{ message }}</span>
                 </div>
             </div>
         </form>
@@ -55,6 +62,8 @@ const user = ref({
     confirmPassword: '',
 });
 
+const message = ref('');
+
 const register = async () => {
     $fetch('/api/register/', {
         method: 'POST',
@@ -65,5 +74,13 @@ const register = async () => {
         body: JSON.stringify(user.value)
     });
 };
+
+function check() {
+    if (user.value.password !== user.value.confirmPassword) {
+        message.value = 'Passwords do not match';
+    } else {
+        message.value = '';
+    }
+}
 
 </script>

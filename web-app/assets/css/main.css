@@ -19,3 +19,7 @@
     @apply transition-all duration-500 ease-in-out;
     @apply hover:shadow-blue-700
 }
+
+.alert {
+    @apply bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative;
+}

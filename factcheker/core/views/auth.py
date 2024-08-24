@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-
+# TODO: Add error handling
 @api_view(['POST'])
 def register(request):
     email = request.data.get('email')
@@ -30,6 +30,7 @@ def register(request):
     
     return Response(status=status.HTTP_201_CREATED)
 
+# TODO: Add error handling
 @api_view(['POST'])
 def login_view(request: Request):
     email = request.data.get('email')
