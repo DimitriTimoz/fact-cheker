@@ -49,7 +49,10 @@
         'Content-Type': 'application/json',
         "X-CSRFToken": useCookie('csrftoken').value || ''
       },
-      body: JSON.stringify(user.value),
+      body: JSON.stringify({
+        email: user.value.email,
+        password: user.value.password
+      })
     });
 
     const data = await response;
