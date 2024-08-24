@@ -1,14 +1,14 @@
 <template>
     <div class="container lg mx-auto center">
-        <textarea class="text-text bg-transparent center w-full mt-5 px-1 outline-blue-500 border-2 border-primary rounded-lg"
+        <textarea class="text-text bg-transparent center w-full mt-5 p-2 outline-blue-500 border-2 border-primary rounded-lg mb-2"
                     placeholder="The statement..."
                     @change="check"
                     v-model="value">
         </textarea>
         <button class="btn" @click="check">Check</button>
         <button class="btn ml-2" @click="clear">Clear</button>
-        <div v-if="review.fetched">
-            <p>Conclusion: {{ review.conclusion }}</p>
+        <div v-if="review.fetched" class="mt-5 container">
+            <p class="text-text">Conclusion: {{ review.conclusion }}</p>
         </div>
     </div>
 </template>
@@ -24,8 +24,8 @@ interface ReviewResponse {
 
 const value = ref('');
 const review = ref({
-    fetched : false,
-    conclusion: '',
+    fetched : true,
+    conclusion: 'This is a conclusion',
     reviews: [] as string[]
 })
 
