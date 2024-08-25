@@ -9,7 +9,6 @@ from core.checker import fact_check
 @api_view(['POST'])
 @login_required
 def fact_check_view(request):
-    print(request)
     content = request.data.get('content')
     reviews, conclusion = fact_check(content)
     result = {
