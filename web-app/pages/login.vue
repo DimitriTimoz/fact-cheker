@@ -35,6 +35,8 @@
     </div>
   </template>
   <script lang="ts" setup>
+import { $apifetch } from '~/composable/fetch';
+
   const user = ref({
     email: '',
     password: '',
@@ -43,11 +45,10 @@
   
   const login = async () => {
     // Login and check status
-    const response = await $fetch('/api/login/', {
+    const response = await $apifetch('/api/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        "X-CSRFToken": useCookie('csrftoken').value || ''
       },
       body: JSON.stringify({
         email: user.value.email,

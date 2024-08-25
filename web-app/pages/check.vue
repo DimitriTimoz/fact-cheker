@@ -15,6 +15,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { $apifetch } from '~/composable/fetch';
 
 interface ReviewResponse {
     fetched: boolean;
@@ -39,12 +40,10 @@ function clear() {
 }
 
 async function check() {
-    const csrf = useCookie('csrftoken');
-    const response: ReviewResponse = await $fetch<ReviewResponse>('/api/check/', {
+    const response = await $apifetch('/api/check/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrf.value || ''
         },
 
         body: JSON.stringify({ content: value.value })

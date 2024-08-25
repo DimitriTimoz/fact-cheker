@@ -55,6 +55,7 @@ interface User {
 }
 
 import { ref } from 'vue';
+import { $apifetch } from '~/composable/fetch';
 
 const user = ref({
     email: '',
@@ -65,11 +66,10 @@ const user = ref({
 const message = ref('');
 
 const register = async () => {
-    $fetch('/api/register/', {
+    $apifetch('/api/register/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "X-CSRFToken": useCookie('csrftoken').value || ''
         },
         body: JSON.stringify(user.value)
     });

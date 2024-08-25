@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/http-proxy-middleware": "^1.0.0",
     "nuxt": "^3.13.0",
+    "ohmyfetch": "^0.4.21",
     "vue": "latest"
   },
   "devDependencies": {

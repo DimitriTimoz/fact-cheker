@@ -3,7 +3,6 @@ from django.urls import include, path
 
 from core import views
 
-
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -11,5 +10,6 @@ urlpatterns = [
     path('check/', views.fact_check_view),
     path('register/', views.register),
     path('login/', views.login_view),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('csrf', views.get_csrf_token),
 ]

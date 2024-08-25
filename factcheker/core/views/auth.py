@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -31,6 +32,7 @@ def register(request):
     return Response(status=status.HTTP_201_CREATED)
 
 # TODO: Add error handling
+@csrf_exempt
 @api_view(['POST'])
 def login_view(request: Request):
     email = request.data.get('email')
