@@ -25,7 +25,7 @@ Instructions:
 - short and concise
 - Do not use words like: "fact checking"..
 - Do not try to answer to the statement
-IMPORTANT: One query
+IMPORTANT: One short query
 """
 
 client = Groq(
