@@ -141,8 +141,12 @@ def draw_conclusion(statement, reviews):
 # TODO: Work when JS is required
 # TODO: Detect non-article pages
 def get_website_content(url):
-    response = requests.get(url, timeout=5)
-    
+    response = None
+    try:
+        response = requests.get(url, timeout=5)
+    except Exception as e:
+        print("Exception", e)
+        return ""    
     domain = url.split("/")[2]
     domain = domain.split(".")[-2] + "." + domain.split(".")[-1]
     
@@ -211,10 +215,9 @@ def fact_check(statement: str):
     
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit the search function to get the search results
-        future_search = executor.submit(search_key_words, query)
-        search_results = future_search.result()
-
+        search_results = search_key_words(query)
         reviews = []
+        print("Search results:", len(search_results))
 
         # Function to process each search result
         def process_result(result):
@@ -254,4 +257,3 @@ if __name__ == "__main__":
     s = """
     Un sachet de couleur blanche est tombé du pantalon de Nancy Pelosi alors qu'elle entrait sur scène pour son discours à la convention du DNC.
     """
-    print(fact_check(s))
