@@ -6,5 +6,33 @@
             "article",
             "#post-container"
         ]
+    }, 
+    {
+        "title": "The Guardian",
+        "url": "https://www.theguardian.com/",
+        "selectors" : [
+            ".article-body-commercial-selector"
+        ]
+    }, 
+    {
+        "title": "The New York Times",
+        "url": "https://www.nytimes.com/",
+        "selectors" : [
+            "section[name=articleBody]"
+        ]
+    },
+    {
+        "title": "The Whashington Post",
+        "url": "https://www.washingtonpost.com/",
+        "selectors" : [
+            "article"
+        ]
+    },
+    {
+        "title": "Le Point",
+        "url": "https://www.lepoint.fr/",
+        "selectors" : [
+            "article"
+        ]
     }
 ]
