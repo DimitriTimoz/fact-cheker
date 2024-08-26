@@ -2,7 +2,6 @@ use scraper::Selector;
 use serde::{Deserialize, Serialize};
 use spider::url::Url;
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NewspaperModel {
     title: String,
@@ -16,7 +15,6 @@ pub struct Newspaper {
     url: Url,
     selectors: Vec<Selector>,
 }
-
 
 impl From<NewspaperModel> for Newspaper {
     fn from(model: NewspaperModel) -> Self {
@@ -52,4 +50,11 @@ impl Newspaper {
     pub fn get_selectors(&self) -> &Vec<Selector> {
         &self.selectors
     }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Paper {
+    pub title: String,
+    pub url: String,
+    pub content: String,
 }
