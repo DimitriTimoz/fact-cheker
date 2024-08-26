@@ -1,16 +1,13 @@
 extern crate spider;
 
+use std::hash::{DefaultHasher, Hash, Hasher};
+
 use futures::executor::block_on;
 use newspaper::{Newspaper, NewspaperModel, Paper};
 use spider::website::Website;
 use spider::tokio;
 
-use meilisearch_sdk::{
-    indexes::*,
-    client::*,
-    search::*,
-    settings::*
-  };
+use meilisearch_sdk::client::*;
   
 pub mod newspaper;
 
@@ -21,11 +18,11 @@ async fn main() {
     let newspapers: Vec<NewspaperModel> = serde_json::from_reader(file).unwrap();
 
     let newspapers = newspapers.iter().map(|newspaper| Newspaper::from(newspaper.clone())).collect::<Vec<_>>();
+    let mut hasher: DefaultHasher = DefaultHasher::new();
 
     for paper in newspapers {
        let mut website = Website::new(paper.get_url().as_str());
-        website.with_depth(7);
-        website.with_limit(100);
+        website.with_limit(1000);
         println!("Scraping {}", paper.get_title());
         website.scrape().await;
         println!("Scraping done");
@@ -38,15 +35,15 @@ async fn main() {
                     let frag = document.select(selector).next();
                     if let Some(frag) = frag {
                         let text = frag.text().collect::<Vec<_>>();
-                        println!("Selector found");
                         if text.is_empty() {
                             continue;
                         }
-                        
+                        page.get_url().hash(&mut hasher);
                         papers.push(Paper {
                             title: page.get_url().to_string(),
                             url: page.get_url().to_string(),
                             content: text.join(" "),
+                            hash_url: hasher.finish()
                         });
                         break;    
                     }
@@ -58,14 +55,13 @@ async fn main() {
         }
         println!("Indexing {} papers", papers.len());
         block_on(async move {
-            let client = Client::new("http://localhost:7700", Some("")).unwrap();
+            let client = Client::new("http://localhost:7700", Some("p5nnddvyVWHDU-pBcD4QJTUGELtsLzgmA7eeU9M5eeA")).unwrap();
 
-            let res = client.index("papers").add_documents(&papers, Some("url")).await;
+            let res = client.index("papers").add_documents(&papers, Some("hash_url")).await;
             match res {
                 Ok(_) => println!("Indexing done"),
                 Err(e) => println!("Error: {}", e),
             }
-
         });
     }
 }

@@ -56,5 +56,6 @@ impl Newspaper {
 pub struct Paper {
     pub title: String,
     pub url: String,
+    pub hash_url: u64,
     pub content: String,
 }
