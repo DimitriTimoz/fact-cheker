@@ -11,14 +11,14 @@
         "title": "The Guardian",
         "url": "https://www.theguardian.com/",
         "selectors" : [
-            ".article-body-commercial-selector"
+            "article"
         ]
     }, 
     {
         "title": "The New York Times",
         "url": "https://www.nytimes.com/",
         "selectors" : [
-            "section[name=articleBody]"
+            "article"
         ]
     },
     {
