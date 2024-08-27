@@ -34,5 +34,19 @@
         "selectors" : [
             "article"
         ]
+    },
+    {
+        "title": "The Independent",
+        "url": "https://www.independent.co.uk/",
+        "selectors" : [
+            "article"
+        ]
+    }, 
+    {
+        "title": "The Times",
+        "url": "https://www.thetimes.co.uk/",
+        "selectors" : [
+            "article"
+        ]
     }
 ]
