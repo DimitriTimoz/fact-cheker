@@ -66,13 +66,17 @@ const user = ref({
 const message = ref('');
 
 const register = async () => {
-    $apifetch('/api/register/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user.value)
-    });
+    try {
+        const result = await $apifetch('/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user.value)
+        });
+    } catch (error) {
+        message.value = 'Registration failed';
+    }
 };
 
 function check() {
