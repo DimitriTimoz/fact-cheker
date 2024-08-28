@@ -3,25 +3,27 @@ extern crate env_logger;
 
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-use futures::executor::block_on;
 use newspaper::{Newspaper, NewspaperModel, Paper};
 use spider::website::Website;
 use spider::tokio;
-use env_logger::Env;
 
 use meilisearch_sdk::client::*;
   
 pub mod newspaper;
 
+async fn indexing(papers: &[Paper]) {
+    println!("Indexing {} papers", papers.len());
+    let client = Client::new("http://localhost:7700", Some("Q-UTP4-UBQbElK0Tqg70cYTbbcrZggWbeFns9IYHFxk")).unwrap();
+
+    let res = client.index("papers").add_documents(papers, Some("hash_url")).await;
+    match res {
+        Ok(_) => println!("Indexing done"),
+        Err(e) => println!("Error: {}", e),
+    }
+}
 
 #[tokio::main]
 async fn main() {
-    let env = Env::default()
-    .filter_or("RUST_LOG", "error")
-    .write_style_or("RUST_LOG_STYLE", "always");
-
-    env_logger::init_from_env(env);
-
     let file = std::fs::File::open("newspapers.json").unwrap();
     let newspapers: Vec<NewspaperModel> = serde_json::from_reader(file).unwrap();
 
@@ -39,9 +41,8 @@ async fn main() {
             println!("Scraping pages");
             for page in pages.as_ref() {
                 let html = page.get_html();
-                println!("Scraping page");
-                let document = scraper::Html::parse_fragment(&html);
-                println!("doc scraped");
+
+                let document = scraper::Html::parse_document(&html);
                 for selector in paper.get_selectors() {
                     let texts = document.select(selector).flat_map(|el| el.text()).collect::<Vec<_>>();
                     if texts.is_empty() {
@@ -56,20 +57,16 @@ async fn main() {
                     });
                     break;    
                 }
+
+                if papers.len() >= 500 {
+                    indexing(papers.as_slice()).await;
+                    papers.clear();
+                }
             }
         }
         if papers.is_empty() {
             continue;
         }
-        println!("Indexing {} papers", papers.len());
-        block_on(async move {
-            let client = Client::new("http://localhost:7700", Some("tApGJDuzRwoxlq8GAJq6FhgSHytT68bjtDYDaxY41s0")).unwrap();
-
-            let res = client.index("papers").add_documents(&papers, Some("hash_url")).await;
-            match res {
-                Ok(_) => println!("Indexing done"),
-                Err(e) => println!("Error: {}", e),
-            }
-        });
+        indexing(papers.as_slice()).await;
     }
 }
