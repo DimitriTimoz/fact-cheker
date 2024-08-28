@@ -20,7 +20,7 @@ impl From<NewspaperModel> for Newspaper {
     fn from(model: NewspaperModel) -> Self {
         let mut selectors = Vec::new();
         for selector in model.selectors {
-            selectors.push(Selector::parse(&selector).unwrap());
+            selectors.push(Selector::parse(&format!("{} :not(script):not(style)", selector)).unwrap());
         }
         Newspaper {
             title: model.title,

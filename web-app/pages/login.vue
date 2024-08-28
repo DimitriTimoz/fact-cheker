@@ -45,18 +45,25 @@ import { $apifetch } from '~/composable/fetch';
   
   const login = async () => {
     // Login and check status
-    const response = await $apifetch('/api/login/', {
-      method: 'POST',
-      headers: {
+    try {
+      const result = await $apifetch('/api/login/', {
+        method: 'POST',    
+        headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: user.value.email,
-        password: user.value.password
-      })
-    });
+        },
+        body: JSON.stringify({
+          email: user.value.email,
+          password: user.value.password
+        })
+      });
+      user.value.message = '';
+      // Redirect to the check page
+      window.location.href = '/check';
 
-    const data = await response;
+    } catch (error: any) {
+      console.log(error.data);
+      user.value.message = 'Login failed';
+    }
   };
   </script>
   
