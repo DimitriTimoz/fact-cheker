@@ -3,6 +3,7 @@ extern crate env_logger;
 
 use std::hash::{DefaultHasher, Hash, Hasher};
 
+use env_logger::Env;
 use newspaper::{Newspaper, NewspaperModel, Paper};
 use spider::website::Website;
 use spider::tokio;
@@ -22,51 +23,70 @@ async fn indexing(papers: &[Paper]) {
     }
 }
 
+async fn process_page(html: String, paper: &Newspaper) -> Option<Paper> {
+    let mut hasher: DefaultHasher = DefaultHasher::new();
+
+    let document = scraper::Html::parse_document(&html);
+    for selector in paper.get_selectors() {
+        let texts = document.select(selector).flat_map(|el| el.text()).collect::<Vec<_>>();
+        if texts.is_empty() {
+            continue;
+        }
+        paper.get_url().hash(&mut hasher);
+        return Some(Paper {
+            title: paper.get_url().to_string(),
+            url: paper.get_url().to_string(),
+            content: texts.join(" "),
+            hash_url: hasher.finish(),
+        });
+    }
+    None
+}
+
+
 #[tokio::main]
 async fn main() {
+    let env = Env::default()
+    .filter_or("RUST_LOG", "error")
+    .write_style_or("RUST_LOG_STYLE", "always");
+
+    env_logger::init_from_env(env);
+
     let file = std::fs::File::open("newspapers.json").unwrap();
     let newspapers: Vec<NewspaperModel> = serde_json::from_reader(file).unwrap();
 
     let newspapers = newspapers.iter().map(|newspaper| Newspaper::from(newspaper.clone())).collect::<Vec<_>>();
-    let mut hasher: DefaultHasher = DefaultHasher::new();
     // TODO: Use a thread pool to scrape multiple websites concurrently
     for paper in newspapers {
-       let mut website = Website::new(paper.get_url().as_str());
-        website.with_limit(10_000);
+        let mut website = Website::new(paper.get_url().as_str());
+        website.with_limit(100000);
+        let mut rx2 = website.subscribe(0).unwrap();
         println!("Scraping {}", paper.get_title());
-        website.scrape().await;
-        println!("Scraping done");
-        let mut papers = Vec::new();
-        if let Some(pages) = website.get_pages() {
-            println!("Scraping pages");
-            for page in pages.as_ref() {
+        tokio::spawn(async move {
+            const MAX_PAPERS: usize = 64;
+            let mut papers = Vec::with_capacity(MAX_PAPERS);
+            while let Ok(page) = rx2.recv().await {
+                println!("Page: {}", page.get_url());
                 let html = page.get_html();
 
-                let document = scraper::Html::parse_document(&html);
-                for selector in paper.get_selectors() {
-                    let texts = document.select(selector).flat_map(|el| el.text()).collect::<Vec<_>>();
-                    if texts.is_empty() {
-                        continue;
+                if let Some(paper) = process_page(html, &paper).await {
+                    papers.push(paper);
+                    if papers.len() >= MAX_PAPERS {
+                        indexing(papers.as_slice()).await;
+                        papers.clear();
                     }
-                    page.get_url().hash(&mut hasher);
-                    papers.push(Paper {
-                        title: page.get_url().to_string(),
-                        url: page.get_url().to_string(),
-                        content: texts.join(" "),
-                        hash_url: hasher.finish()
-                    });
-                    break;    
-                }
-
-                if papers.len() >= 500 {
-                    indexing(papers.as_slice()).await;
-                    papers.clear();
                 }
             }
-        }
-        if papers.is_empty() {
-            continue;
-        }
-        indexing(papers.as_slice()).await;
+            if !papers.is_empty() {
+                indexing(papers.as_slice()).await;
+                papers.clear();
+            }
+        });
+        website.scrape().await;
+        println!("Scraping done");
+        //if papers.is_empty() {
+         //   continue;
+        //}*/
+        //indexing(papers.as_slice()).await;
     }
 }

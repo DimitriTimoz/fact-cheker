@@ -35,34 +35,29 @@
     </div>
   </template>
   <script lang="ts" setup>
-import { $apifetch } from '~/composable/fetch';
+import { storeToRefs } from 'pinia'; 
+import { useAuthStore } from '~/store/auth';
+
+const { authenticateUser } = useAuthStore(); 
+
+const { authenticated } = storeToRefs(useAuthStore()); 
 
   const user = ref({
     email: '',
     password: '',
-    message: ''
   });
+
+  const message = ref('');
   
   const login = async () => {
     // Login and check status
-    try {
-      const result = await $apifetch('/api/login/', {
-        method: 'POST',    
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: user.value.email,
-          password: user.value.password
-        })
-      });
-      user.value.message = '';
-      // Redirect to the check page
-      window.location.href = '/check';
+    const response = await authenticateUser(user.value);
+    console.log("resp", response);
 
-    } catch (error: any) {
-      console.log(error.data);
-      user.value.message = 'Login failed';
+    if (authenticated) {
+      window.location.href = '/';
+    } else {
+      message.value = 'Invalid credentials';
     }
   };
   </script>

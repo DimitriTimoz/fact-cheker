@@ -21,5 +21,9 @@
         </footer>
     </div>
 </template>
-<style>
-</style>
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/store/auth';
+
+const { authenticated } = storeToRefs(useAuthStore());
+</script>

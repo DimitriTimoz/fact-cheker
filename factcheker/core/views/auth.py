@@ -46,8 +46,11 @@ def login_view(request: Request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     login(django_request, user)
-    
-    return Response(status=status.HTTP_200_OK)
+    token = user.auth_token.key
+    return Response({
+            token: token
+        },
+        status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def logout_view(request):

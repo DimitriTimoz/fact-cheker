@@ -82,4 +82,9 @@ async function check(e: Event) {
         reviews: data.reviews
     }
 }
+
+definePageMeta({
+    middleware: 'auth' 
+})
+
 </script>
