@@ -1,9 +1,6 @@
-extern crate spider;
-extern crate env_logger;
-
+use spider::url::Url;
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-use env_logger::Env;
 use newspaper::{Newspaper, NewspaperModel, Paper};
 use spider::website::Website;
 use spider::tokio;
@@ -14,7 +11,7 @@ pub mod newspaper;
 
 async fn indexing(papers: &[Paper]) {
     println!("Indexing {} papers", papers.len());
-    let client = Client::new("http://localhost:7700", Some("Q-UTP4-UBQbElK0Tqg70cYTbbcrZggWbeFns9IYHFxk")).unwrap();
+    let client = Client::new("http://localhost:7700", Some("R5K9sb6KbsnAIEuR97mFrHMEEQ4oBjWAlWZcv9OeN70")).unwrap();
 
     let res = client.index("papers").add_documents(papers, Some("hash_url")).await;
     match res {
@@ -46,12 +43,6 @@ async fn process_page(html: String, paper: &Newspaper) -> Option<Paper> {
 
 #[tokio::main]
 async fn main() {
-    let env = Env::default()
-    .filter_or("RUST_LOG", "error")
-    .write_style_or("RUST_LOG_STYLE", "always");
-
-    env_logger::init_from_env(env);
-
     let file = std::fs::File::open("newspapers.json").unwrap();
     let newspapers: Vec<NewspaperModel> = serde_json::from_reader(file).unwrap();
 
@@ -74,14 +65,19 @@ async fn main() {
                     if papers.len() >= MAX_PAPERS {
                         indexing(papers.as_slice()).await;
                         papers.clear();
+                        println!("After 1");
                     }
                 }
+                println!("After 2");
             }
+            println!("After 3");
             if !papers.is_empty() {
                 indexing(papers.as_slice()).await;
                 papers.clear();
+                println!("After panicked");
             }
         });
+        println!("After 4");
         website.scrape().await;
         println!("Scraping done");
         //if papers.is_empty() {
