@@ -28,15 +28,15 @@
           <button @click.prevent="login" class="btn">Log in</button>
         </div>
 
-        <div v-if="user.message" class="mt-5 alert" role="alert">
-          <span>{{ user.message }}</span>
+        <div v-if="message" class="mt-5 alert" role="alert">
+          <span>{{ message }}</span>
         </div>
       </form>
     </div>
   </template>
   <script lang="ts" setup>
 import { storeToRefs } from 'pinia'; 
-import { useAuthStore } from '~/store/auth';
+import { useAuthStore, type AuthResultInterface } from '~/store/auth';
 
 const { authenticateUser } = useAuthStore(); 
 
@@ -51,13 +51,12 @@ const { authenticated } = storeToRefs(useAuthStore());
   
   const login = async () => {
     // Login and check status
-    const response = await authenticateUser(user.value);
-    console.log("resp", response);
-    // Check always redirect
-    if (authenticated) {
-      window.location.href = '/';
+    const response: AuthResultInterface = await authenticateUser(user.value);
+    console.log(response);
+    if (response.success) {
+      window.location.href = '/check';
     } else {
-      message.value = 'Invalid credentials';
+      message.value = response.message;
     }
   };
   </script>

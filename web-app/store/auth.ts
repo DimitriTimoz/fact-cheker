@@ -2,8 +2,13 @@ import { defineStore } from "pinia";
 import { $apifetch } from "~/composable/fetch";
 
 interface UserPayloadInterface {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResultInterface {
+  success: boolean;
+  message: string;
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -12,8 +17,8 @@ export const useAuthStore = defineStore('auth', {
     loading: false,
   }),
   actions: {
-    async authenticateUser({ email, password }: UserPayloadInterface): Promise<string> {
-      // useFetch from nuxt 3
+    async authenticateUser({ email, password }: UserPayloadInterface): Promise<AuthResultInterface> {
+      // useFetch from nuxt 
       try {
         const { data, pending }: any = await $apifetch('/api/login/', {
             method: 'POST',    
@@ -25,15 +30,15 @@ export const useAuthStore = defineStore('auth', {
             });
           this.loading = pending;
           console.log("data", data);
-          if (data.value) {
-            console.log("data", data)
-            this.authenticated = true;
-            return "success";
-          }    
-      } catch (error) {
-        console.log("error", error);
+          this.authenticated = true;
+          this.loading = false;
+          return { success: true, message: "User authenticated" };
+      
+      } catch (error: any) {
+        console.error(error);
       }
-      return "Login failed";
+
+      return { success: false, message: "User not authenticated" };
     },
     logUserOut() {
       this.authenticated = false;

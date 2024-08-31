@@ -1,11 +1,7 @@
 import os
-from typing import List
 
 from groq import Groq
 
-import requests
-
-from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
 import meilisearch
 import concurrent.futures
@@ -134,38 +130,6 @@ def draw_conclusion(statement, reviews):
     chat_completion = chat_completion.choices[0].message.content
     return chat_completion    
 
-# TODO: Add error handling
-# TODO: Work when JS is required
-# TODO: Detect non-article pages
-def get_website_content(url):
-    response = None
-    try:
-        response = requests.get(url, timeout=5)
-    except Exception as e:
-        print("Exception", e)
-        return ""    
-    domain = url.split("/")[2]
-    domain = domain.split(".")[-2] + "." + domain.split(".")[-1]
-    
-    # Check is html thanks to the content
-    if not response.text.startswith("<!DOCTYPE html>"):
-        return ""
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-
-    # Keep only the relevant elements
-    if domain in relevent_selectors:
-        text = ""
-        for selector in relevent_selectors[domain]:
-            for element in soup.select(selector):
-                text += element.get_text()
-        return text
-    else:
-        # Remove all non-article elements
-        for script in soup(["script", "style", "header", "footer", "nav", "aside", "form", "noscript"]):
-            script.decompose()
-
-        return soup.get_text()
 
 index = meilisearch.Client('http://127.0.0.1:7700', os.getenv('MEILISEARCH_API_KEY')).index('papers')
 
