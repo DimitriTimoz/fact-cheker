@@ -46,9 +46,9 @@ interface ReviewResponse {
 
 const value = ref('');
 const review = ref({
-    fetched : true,
-    conclusion: 'This is a conclusion',
-    reviews: [{ state: false, url:"http://aaa.d", review: 'This is a review' }]
+    fetched : false,
+    conclusion: '',
+    reviews: []
 })
 
 function clear() {
