@@ -89,15 +89,13 @@ async fn main() {
 
     for paper in newspapers {
         let mut website = Website::new(paper.get_url());
-        website.with_limit(1);
         website.with_delay(18);
-        let mut rx2 = website.subscribe(0).unwrap(); // Corrected buffer size
+        let mut rx2 = website.subscribe(1000).unwrap(); // Corrected buffer size
         println!("Scraping {}", paper.get_title());
         let join_handle = tokio::spawn(async move {
             const MAX_PAPERS: usize = 80;
             let mut papers = Vec::with_capacity(MAX_PAPERS);
             while let Ok(page) = rx2.recv().await {
-                println!("page");
                 if let Some(paper) = process_page(page, &paper).await {
                     papers.push(paper);
                     if papers.len() >= MAX_PAPERS {

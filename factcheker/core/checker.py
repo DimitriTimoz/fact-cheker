@@ -1,10 +1,12 @@
 import os
 from typing import List
+
 from groq import Groq
+
 import requests
+
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
-
 import meilisearch
 import concurrent.futures
 
@@ -61,11 +63,11 @@ ARTICLE //// ARTICLE
 here is the article
 
 Output format:
-True or False
+False, True, or Uncertain
 An explanation of why the statement is true or false according to the article.
 
 Example:
-True
+Uncertain
 The article explains that so the statement is true.
 """
 
@@ -242,8 +244,10 @@ def fact_check(statement: str):
                 content = content[:8_000 * 2]
             review = read_article_and_give_review(statement, content).strip()
             print("Review:", review)
+            if review.startswith("Uncertain"):
+                return None
             review_state = review.startswith("True")
-            review = review.removeprefix("True").removeprefix("False").strip()
+            review = review.removeprefix("True").removeprefix("False").removeprefix("Uncertain").strip()
             
             return {
                 "state": review_state,
@@ -252,8 +256,8 @@ def fact_check(statement: str):
             }
 
         # Process results in batches of 3
-        batch_size = 4
-        for i in range(0, len(search_results), batch_size):
+        batch_size = 2
+        for i in range(0, min(len(search_results), 2), batch_size):
             batch = search_results[i:i + batch_size]
             futures = [executor.submit(process_result, result) for result in batch]
             
