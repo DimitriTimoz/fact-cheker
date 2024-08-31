@@ -1,6 +1,7 @@
     use std::hash::{DefaultHasher, Hash, Hasher};
 
     use newspaper::{Newspaper, NewspaperModel, Paper};
+    use scraper::Selector;
     use spider::page::Page;
     use spider::website::Website;
     use spider::tokio;
@@ -34,6 +35,7 @@
         let mut hasher: DefaultHasher = DefaultHasher::new();
 
         let document = scraper::Html::parse_document(&html);
+        let mut title = page.get_url().to_string();
         for selector in paper.get_selectors() {
             let texts = document.select(selector)
             .filter(|element| {
@@ -45,9 +47,18 @@
             if texts.is_empty() {
                 continue;
             }
+            
+
+            for title_selector in ["h1", "h2", "h3", "h4", "h5", "h6"].iter() {
+                if let Some(t) = document.select(&Selector::parse(title_selector).unwrap()).next() {
+                    title = t.text().collect::<Vec<_>>().join(" ");
+                    break;
+                }
+            }
+
             page.get_url().hash(&mut hasher);
             return Some(Paper {
-                title: page.get_url().to_string(),
+                title,
                 url: page.get_url().to_string(),
                 content: texts.join(" "),
                 hash_url: hasher.finish(),
@@ -66,35 +77,32 @@
 
         for paper in newspapers {
             let mut website = Website::new(paper.get_url());
-            website.with_delay(20);
-            website.with_limit(50_000);
-            let mut rx2 = website.subscribe(32).unwrap();
+            website.with_delay(10);
+            website.with_limit(10_000);
+            let mut rx2 = website.subscribe(128).unwrap();
             println!("Scraping {}", paper.get_title());
             let scrapper = website.scrape_smart();
-            let indexer = tokio::spawn(async move {
+            tokio::spawn(async move {
                 const MAX_PAPERS: usize = 64;
                 let mut papers = Vec::with_capacity(MAX_PAPERS);
-                loop {
-                    let page = rx2.recv().await;
-                    match page {
-                        Err(e) => println!("Error: {}", e),
-                        Ok(page) => {
-                            if page.is_empty() {
-                                continue;
-                            }
-                            if let Some(paper) = process_page(page, &paper).await {
-                                papers.push(paper);
-                                if papers.len() >= MAX_PAPERS {
-                                    indexing(papers.as_slice()).await;
-                                    papers.clear();
-                                }
-                            }
+                while let Ok(page) = rx2.recv().await {
+                    if page.is_empty() {
+                        continue;
+                    }
+                    if let Some(paper) = process_page(page, &paper).await {
+                        papers.push(paper);
+                        if papers.len() >= MAX_PAPERS {
+                            indexing(papers.as_slice()).await;
+                            papers.clear();
                         }
-                            
+                        
                     }
                 }
+                if !papers.is_empty() {
+                    indexing(papers.as_slice()).await;
+                }
             });
-            let _ = futures::join!(scrapper, indexer);
+            scrapper.await;
             website.unsubscribe();
         }
     }
