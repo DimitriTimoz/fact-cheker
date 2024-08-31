@@ -53,7 +53,7 @@ const { authenticated } = storeToRefs(useAuthStore());
     // Login and check status
     const response = await authenticateUser(user.value);
     console.log("resp", response);
-
+    // Check always redirect
     if (authenticated) {
       window.location.href = '/';
     } else {
