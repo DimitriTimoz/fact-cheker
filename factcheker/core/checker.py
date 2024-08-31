@@ -4,15 +4,9 @@ from groq import Groq
 import requests
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
-import concurrent.futures
 
-relevent_selectors = {
-    "theguardian.com" : [".article-body-commercial-selector"],
-    "lemonde.fr" : ["article", "#post-container"],
-    "nytimes.com": ["section[name=articleBody]"],
-    "washingtonpost.com": ["article"],
-    "lepoint.fr": ["article"],
-}
+import meilisearch
+import concurrent.futures
 
 PROMPT_SYSTEM = """
 Generate a search engine query for fact-checking the provided content.
@@ -23,7 +17,8 @@ Instructions:
 - identify the stated fact
 - Your answer will be used directly as a search query so don't provide multiple queries.
 - short and concise
-- Do not use words like: "fact checking"..
+- Your query will be used in a search engine working with numbers of keywords matching the content.
+- Do not use words like: "fact checking", "true" 
 - Do not try to answer to the statement
 IMPORTANT: One short query
 """
@@ -52,6 +47,7 @@ def generate_key_words(content):
     
     chat_completion = chat_completion.choices[0].message.content
     query = chat_completion.strip()
+    query = query.replace("\"", "")
     return query
 
 
@@ -80,7 +76,6 @@ def read_article_and_give_review(statement, article):
     ARTICLE //// ARTICLE
     {article}
     """
-    
     chat_completion = client.chat.completions.create(
         messages=[
             {
@@ -169,16 +164,19 @@ def get_website_content(url):
             script.decompose()
 
         return soup.get_text()
-    
-service = build("customsearch", "v1",
-        developerKey=os.environ.get("GOOGLE_API"))
+
+index = meilisearch.Client('http://127.0.0.1:7700', os.getenv('MEILISEARCH_API_KEY')).index('papers')
+
 
 class Article:
     title: str
     url: str
-    def __init__(self, title, url):
+    content: str
+    def __init__(self, title, url, content = None):
         self.title = title
         self.url = url
+        # TODO: fetch content if not provided
+        self.content = content
 
 def google_search(query: str, cse_id: str, num=10):
     #url = f"https://www.googleapis.com/customsearch/v1"
@@ -189,6 +187,9 @@ def google_search(query: str, cse_id: str, num=10):
     #    'num': num,
     #}
     #response = requests.get(url, params=params)
+    service = build("customsearch", "v1",
+        developerKey=os.environ.get("GOOGLE_API"))
+
     resp = None
     try:
         resp = service.cse().list(
@@ -205,8 +206,17 @@ def google_search(query: str, cse_id: str, num=10):
         print("Exception", e, resp)
         return []
   
+
+def meili_search(query: str, num=10):
+    print("Query:", query)
+    response = index.search(query, {"limit": num})
+    articles = []
+    for hit in response["hits"]:
+        articles.append(Article(hit["title"], hit["url"], hit["content"]))
+    return articles  
+
 def search_key_words(query: str):
-    return google_search(query, "51c58602312b440ef")
+    return meili_search(query)
 
 
 def fact_check(statement: str):
@@ -220,14 +230,18 @@ def fact_check(statement: str):
         print("Search results:", len(search_results))
 
         # Function to process each search result
-        def process_result(result):
+        def process_result(result: Article):
             print(result.url)
-            content = get_website_content(result.url)
-            if len(content) > 8_000 * 3 or len(content) < 50:
-                print("Content too long or too short", len(content))
+            content = result.content
+            if not content:
+                content = get_website_content(result.url)
+            if len(content) < 50:
+                print("Content too short", len(content))
                 return None
-            
+            if len(content) > 8_000 * 3:
+                content = content[:8_000 * 2]
             review = read_article_and_give_review(statement, content).strip()
+            print("Review:", review)
             review_state = review.startswith("True")
             review = review.removeprefix("True").removeprefix("False").strip()
             
