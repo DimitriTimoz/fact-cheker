@@ -80,7 +80,7 @@ const register = async () => {
 };
 
 function check() {
-    if (user.value.password !== user.value.confirmPassword) {
+    if (user.value.confirmPassword.length > 0 && user.value.password !== user.value.confirmPassword) {
         message.value = 'Passwords do not match';
     } else {
         message.value = '';
