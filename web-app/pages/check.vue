@@ -1,6 +1,6 @@
 <template>
-    <div v-if="ratelimit" class="flex justify-end" role="alert">
-        <span class="bg-black text-white text-sm rounded-3xl px-3 py-2 text-center m-3" >Rate limit {{  ratelimit.used }}/{{ ratelimit.limit }}</span>
+    <div v-if="userdata" class="flex justify-end" role="alert">
+        <span class="bg-black text-white text-sm rounded-3xl px-3 py-2 text-center m-3" >Rate limit {{  userdata.used }}/{{ userdata.limit }}</span>
     </div>
     <div class="container lg mx-auto center max-w-screen-lg p-2">
         <h1 class="text-title font-bold text-2xl">Fact Checker</h1>
@@ -64,8 +64,8 @@ const review = ref({
 const error = ref('');
 
 const userStore = useUserStore()
-const { updateRate } = userStore
-const { ratelimit } = storeToRefs(userStore);
+const { updateUser } = userStore
+const { userdata } = storeToRefs(userStore);
 
 function clear() {
     value.value = '';
@@ -102,7 +102,7 @@ async function check(e: Event) {
             reviews: data.reviews
         }
         error.value = '';
-        updateRate();
+        updateUser();
 
     } catch (errorResp: any) {
         error.value = errorResp.data.error;

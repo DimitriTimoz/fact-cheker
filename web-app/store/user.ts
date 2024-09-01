@@ -2,41 +2,42 @@
 import { defineStore } from 'pinia'
 import { $apifetch } from '~/composable/fetch'
 
-export interface RateLimit {
+export interface UserData {
     limit: number;
     used: number;
     next_reset: Date;
 }
 
+const USER_DATA = 'userdata';
 export const useUserStore = defineStore('userStore', () => {
-    const ratelimit: Ref<RateLimit | null > = ref(null);
+    const userdata: Ref<UserData | null > = ref(null);
     load();
-    function updateRate() {
-        $apifetch('/api/rate-limit/', {
+    function updateUser() {
+        $apifetch('/api/user/', {
             method: 'GET',
         }).then((data) => {
-            ratelimit.value = { limit: data.limit, used: data.usage, next_reset: new Date(data.next_reset) };
+            userdata.value = { limit: data.limit, used: data.usage, next_reset: new Date(data.next_reset) };
             save();
         })
     }
 
     function save() {
-        sessionStorage.setItem('ratelimit', JSON.stringify(ratelimit.value));
+        sessionStorage.setItem(USER_DATA, JSON.stringify(userdata.value));
     }
 
     function load() {
-        const data = sessionStorage.getItem('ratelimit');
+        const data = sessionStorage.getItem(USER_DATA);
         if (data) {
-            let ratelimitResponse: RateLimit = JSON.parse(data);
+            let userdataResponse: UserData = JSON.parse(data);
             // TODO: handle timezones
-            ratelimitResponse.next_reset = new Date(ratelimitResponse.next_reset);
+            userdataResponse.next_reset = new Date(userdataResponse.next_reset);
 
-            if (ratelimitResponse.next_reset.getTime() > (new Date()).getTime()) {
-                ratelimit.value = ratelimitResponse;
+            if (userdataResponse.next_reset.getTime() > (new Date()).getTime()) {
+                userdata.value = userdataResponse;
                 return;
             }
         }
-        updateRate();
+        updateUser();
     }
-    return { ratelimit, updateRate }
+    return { userdata, updateUser }
 })

@@ -8,7 +8,7 @@ from datetime import date, timedelta
 
 @api_view(['GET'])
 @login_required
-def get_rate_limit(request):
+def get_user_infos(request):
     user = request.user
     profile = UserProfile.objects.get(user=user)
 
