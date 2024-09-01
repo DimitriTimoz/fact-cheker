@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["/bin/bash", "start.sh"]  
+CMD ["/bin/sh", "start.sh"]  
