@@ -74,8 +74,14 @@ const register = async () => {
             },
             body: JSON.stringify(user.value)
         });
-    } catch (error) {
-        message.value = 'Registration failed';
+    } catch (error: any) {
+        console.log(error.data);
+        let m = error.data.error;
+        if (m) {
+            message.value = m;
+        } else {
+            message.value = 'Registration failed';
+        }
     }
 };
 

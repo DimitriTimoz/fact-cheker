@@ -15,15 +15,18 @@ def register(request):
     
     # Check if the email is already used
     if User.objects.filter(email=email).exists():
-        return Response(status=status.HTTP_409_CONFLICT)
+        return Response({
+            "error": "Email already used."
+            }, status=status.HTTP_409_CONFLICT)
     
     # Check if the email is valid   
     if not email or not "@" in email:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "error": "Invalid email."
+            }, status=status.HTTP_400_BAD_REQUEST)
     
     user = User.objects.create_user(username=email, password=password, email=email)
     user.save()
-    print(user.username, "registered")
     
     # Login the user
     django_request = request._request
@@ -43,7 +46,9 @@ def login_view(request: Request):
     user = authenticate(request=django_request, username=email, password=password)
     
     if user is None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({
+                "error": "Invalid credentials."
+            }, status=status.HTTP_404_NOT_FOUND)
     
     login(django_request, user)
     return Response(
