@@ -1,7 +1,7 @@
 <template>
     <div class="container mx-auto max-w-sm">
       <div class="center">
-        <h2 class="center title text-text text-xl">Log in</h2>
+        <h2 class="auth-title">Log in</h2>
       </div>
       <form class="container form flex flex-col mx-auto">
         <label class="input-label"  for="email"><b>Email</b></label>
