@@ -25,6 +25,10 @@
         <div v-if="review.fetched" class="mt-5 container border-2 rounded-md p-2 shadow-sm">
             <p class="text-text">{{ review.conclusion }}</p>
         </div>
+
+        <div v-if="error" class="mt-5 alert" role="alert">
+            <span>{{ error }}</span>
+        </div>
     </div>
 </template>
 
@@ -48,8 +52,10 @@ const value = ref('');
 const review = ref({
     fetched : false,
     conclusion: '',
-    reviews: []
+    reviews: [] as ReviewResponse[]
 })
+
+const error = ref('');
 
 function clear() {
     value.value = '';
@@ -60,26 +66,38 @@ function clear() {
     }
 }
 
+interface CheckError {
+    error: string;
+}
+
 async function check(e: Event) {
     e.preventDefault();
     console.log("Check function triggered"); // Log the function call
 
-    const response = await $apifetch('/api/check/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content: value.value })
-    });
+    try {
+        const response = await $apifetch('/api/check/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: value.value })
+        });
 
-    const data = await response;
+        const data = await response;
 
-    console.log("Response data:", data); // Log the response
+        console.log("Response data:", data); // Log the response
 
-    review.value = {
-        fetched: true,
-        conclusion: data.conclusion,
-        reviews: data.reviews
+        review.value = {
+            fetched: true,
+            conclusion: data.conclusion,
+            reviews: data.reviews
+        }
+
+    } catch (errorResp: any) {
+        console.error("Error:", errorResp); // Log the error
+        console.log("Error data:", errorResp.data); // Log the error data
+        error.value = errorResp.data.error;
+        console.log("Error value:", error.value); // Log the error value
     }
 }
 
