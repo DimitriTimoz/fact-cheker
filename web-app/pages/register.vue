@@ -74,6 +74,7 @@ const register = async () => {
             },
             body: JSON.stringify(user.value)
         });
+        window.location.href = '/check';
     } catch (error: any) {
         console.log(error.data);
         let m = error.data.error;
