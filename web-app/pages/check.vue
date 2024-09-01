@@ -9,8 +9,8 @@
                     placeholder="The statement..."
                     v-model="value">
         </textarea>
-        <button class="btn" @click="check">Check</button>
-        <button class="btn ml-2" @click="clear">Clear</button>
+        <button v-if="!fetching" class="btn" @click="check">Check</button>
+        <button v-if="!fetching" class="btn ml-2" @click="clear">Clear</button>
 
         <li v-for="review in review.reviews" class="mt-5 container list-none">
             <ul class="column flex-row border-2 rounded-md p-2 shadow-sm">
@@ -31,6 +31,14 @@
             <p class="text-text">{{ review.conclusion }}</p>
         </div>
 
+        <div v-if="fetching" class="flex mx-auto justify-center fle">
+            <svg class="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing...
+        </div>
+          
         <div v-if="error" class="mt-5 alert" role="alert">
             <span>{{ error }}</span>
         </div>
@@ -54,6 +62,7 @@ interface ReviewResponse {
     reviews: string[];
 }
 
+const fetching = ref(false);
 const value = ref('');
 const review = ref({
     fetched : false,
@@ -85,6 +94,8 @@ async function check(e: Event) {
     console.log("Check function triggered"); // Log the function call
 
     try {
+        clear();
+        fetching.value = true;
         const response = await $apifetch('/api/check/', {
             method: 'POST',
             headers: {
@@ -92,9 +103,7 @@ async function check(e: Event) {
             },
             body: JSON.stringify({ content: value.value })
         });
-
         const data = await response;
-
 
         review.value = {
             fetched: true,
@@ -102,6 +111,7 @@ async function check(e: Event) {
             reviews: data.reviews
         }
         error.value = '';
+        fetching.value = false;
         updateUser();
 
     } catch (errorResp: any) {
