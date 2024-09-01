@@ -111,12 +111,12 @@ async function check(e: Event) {
             reviews: data.reviews
         }
         error.value = '';
-        fetching.value = false;
         updateUser();
 
     } catch (errorResp: any) {
         error.value = errorResp.data.error;
     }
+    fetching.value = false;
 }
 
 definePageMeta({
