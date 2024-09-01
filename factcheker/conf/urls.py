@@ -12,4 +12,5 @@ urlpatterns = [
     path('login/', views.login_view),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('csrf', views.get_csrf_token),
+    path('rate-limit/', views.get_rate_limit),
 ]

@@ -1,4 +1,7 @@
 <template>
+    <div v-if="ratelimit" class="flex justify-end" role="alert">
+        <span class="bg-black text-white text-sm rounded-3xl px-3 py-2 text-center m-3" >Rate limit {{  ratelimit.used }}/{{ ratelimit.limit }}</span>
+    </div>
     <div class="container lg mx-auto center max-w-screen-lg p-2">
         <h1 class="text-title font-bold text-2xl">Fact Checker</h1>
         <p> Enter a statement to find relevant reviews and references to verify the statement.</p>
@@ -37,6 +40,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { $apifetch } from '~/composable/fetch';
+import { useUserStore } from '~/store/user';
 
 interface ReviewResponse {
     state: boolean;
@@ -58,6 +62,10 @@ const review = ref({
 })
 
 const error = ref('');
+
+const userStore = useUserStore()
+const { updateRate } = userStore
+const { ratelimit } = storeToRefs(userStore);
 
 function clear() {
     value.value = '';
@@ -94,6 +102,7 @@ async function check(e: Event) {
             reviews: data.reviews
         }
         error.value = '';
+        updateRate();
 
     } catch (errorResp: any) {
         error.value = errorResp.data.error;

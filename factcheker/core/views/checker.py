@@ -22,7 +22,7 @@ def fact_check_view(request):
     if profile.last_used.day != date.today().day:
         profile.usage = 0
     if profile.usage >= profile.rate_limit:
-        return Response({"error": "Rate limit exceeded, try tomorrow"}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        return Response({"error": "Rate limit exceeded, please try tomorrow."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
     
     profile.usage += 1
     profile.save()

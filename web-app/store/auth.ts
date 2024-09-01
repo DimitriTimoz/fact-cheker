@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', {
       // useFetch from nuxt 
       try {
         const { data, pending }: any = await $apifetch('/api/login/', {
-            method: 'POST',    
+            method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: email,
@@ -29,7 +29,6 @@ export const useAuthStore = defineStore('auth', {
               })
             });
           this.loading = pending;
-          console.log("data", data);
           this.authenticated = true;
           this.loading = false;
           return { success: true, message: "User authenticated" };

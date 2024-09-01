@@ -1,5 +1,6 @@
 from .checker import *
 from .auth import *
+from .user import *
 
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
