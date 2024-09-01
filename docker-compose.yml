@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   meilisearch:
@@ -17,7 +17,6 @@ services:
     environment:
       MEILISEARCH_URL: http://meilisearch:7700
 
-
   backend:
     build: ./factcheker
     container_name: django_backend
@@ -29,7 +28,8 @@ services:
     depends_on:
       - meilisearch
     environment:
-      MEILISEARCH_URL: http://meilisearch:7700
+      - MEILISEARCH_URL=http://meilisearch:7700
+      - FRONTEND_URL=http://localhost:3000
 
   frontend:
     build: ./web-app
@@ -39,6 +39,7 @@ services:
     environment:
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
+      - API_URL=http://backend:8000
     depends_on:
       - backend
 

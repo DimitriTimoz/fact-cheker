@@ -1,11 +1,14 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { defineEventHandler, H3Event } from 'h3';
 
+// Get the target URL from the environment variable
+const target = process.env.API_URL || 'http://localhost:8000';
+
 export default defineEventHandler((event: H3Event) => {
   // On vérifie si l'URL commence par /api
   if (event.node.req.url?.startsWith('/api')) {
     const proxy = createProxyMiddleware({
-      target: 'http://localhost:8000',
+      target: target,
       pathRewrite: { '^/api': '' },
       changeOrigin: true,
       cookieDomainRewrite: {"*": ""},
