@@ -17,7 +17,7 @@ async fn indexing(papers: &[Paper]) {
 
     println!("Indexing {} papers", papers.len());
     let client = Client::new(
-        "http://localhost:7700",
+         std::env::var("MEILISEARCH_URL").unwrap_or("http://localhost:7700".to_string()),
         Some("a"),
     )
     .unwrap();
@@ -33,12 +33,11 @@ async fn indexing(papers: &[Paper]) {
 }
 
 async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
+
+    let html = page.get_html();
     if page.is_empty() {
         return None;
     }
-
-    let html = page.get_html();
-
     let mut hasher: DefaultHasher = DefaultHasher::new();
 
     let document = scraper::Html::parse_document(&html);
@@ -89,10 +88,11 @@ async fn main() {
 
     for paper in newspapers {
         let mut website = Website::new(paper.get_url());
-        website.with_delay(18);
-        let mut rx2 = website.subscribe(1000).unwrap(); // Corrected buffer size
+        website.with_limit(50_000);
+        website.with_delay(10);
+        let mut rx2 = website.subscribe(1024).unwrap(); 
         println!("Scraping {}", paper.get_title());
-        let join_handle = tokio::spawn(async move {
+        tokio::spawn(async move {
             const MAX_PAPERS: usize = 80;
             let mut papers = Vec::with_capacity(MAX_PAPERS);
             while let Ok(page) = rx2.recv().await {
@@ -109,8 +109,7 @@ async fn main() {
             }
             println!("Done scraping {}", paper.get_title());
         });
-        website.scrape().await; 
+        website.crawl().await; 
         website.unsubscribe();
-        join_handle.await.unwrap();
     }
 }

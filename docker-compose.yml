@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.1
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+
+  crawler:
+    build: ./crawler
+    container_name: rust_crawler
+    depends_on:
+      - meilisearch
+    environment:
+      MEILISEARCH_URL: http://meilisearch:7700
+
+
+  backend:
+    build: ./factcheker
+    container_name: django_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./factcheker:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - meilisearch
+    environment:
+      MEILISEARCH_URL: http://meilisearch:7700
+
+  frontend:
+    build: ./web-app
+    container_name: nuxt_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

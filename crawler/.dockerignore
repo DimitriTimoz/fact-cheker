@@ -1,0 +1,5 @@
+target/
+dumps/
+data.ms/
+meilisearch/
+setup_meilisearch.bash

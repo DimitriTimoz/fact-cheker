@@ -130,8 +130,11 @@ def draw_conclusion(statement, reviews):
     chat_completion = chat_completion.choices[0].message.content
     return chat_completion    
 
-
-index = meilisearch.Client('http://127.0.0.1:7700', os.getenv('MEILISEARCH_API_KEY')).index('papers')
+meilisearch_url = "http://localhost:7700"
+if os.getenv('MEILISEARCH_URL'):
+    meilisearch_url = os.getenv('MEILISEARCH_URL')
+    
+index = meilisearch.Client(meilisearch_url, os.getenv('MEILISEARCH_API_KEY')).index('papers')
 
 
 class Article:
