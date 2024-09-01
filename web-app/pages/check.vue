@@ -85,19 +85,16 @@ async function check(e: Event) {
 
         const data = await response;
 
-        console.log("Response data:", data); // Log the response
 
         review.value = {
             fetched: true,
             conclusion: data.conclusion,
             reviews: data.reviews
         }
+        error.value = '';
 
     } catch (errorResp: any) {
-        console.error("Error:", errorResp); // Log the error
-        console.log("Error data:", errorResp.data); // Log the error data
         error.value = errorResp.data.error;
-        console.log("Error value:", error.value); // Log the error value
     }
 }
 
