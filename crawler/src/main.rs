@@ -9,6 +9,10 @@ use meilisearch_sdk::client::*;
 
 pub mod newspaper;
 
+fn hash_to_string(hash: u64) -> String {
+    format!("{:x}", hash)  
+}
+
 async fn indexing(papers: &[Paper]) {
     if papers.is_empty() {
         println!("No papers to index");
@@ -70,7 +74,7 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
             title,
             url: page.get_url().to_string(),
             content: texts.join(" "),
-            hash_url: hasher.finish(),
+            hash_url: hash_to_string(hasher.finish()),
         });
     }
     None
