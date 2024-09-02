@@ -10,6 +10,7 @@ urlpatterns = [
     path('check/', views.fact_check_view),
     path('register/', views.register),
     path('login/', views.login_view),
+    path('logout/', views.logout_view),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('csrf', views.get_csrf_token),
     path('user/', views.get_user_infos),

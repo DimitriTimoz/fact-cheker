@@ -40,10 +40,22 @@ export const useAuthStore = defineStore('authStore', () => {
     }
   }
 
-  function logUserOut() {
-    authenticated.value = false;
-    save();
-    // TODO: Send logout request to server
+  async function logUserOut() {
+    if (authenticated.value) {
+      try {
+        const response = await $apifetch('/api/logout/', {
+          method: 'POST'
+        });
+  
+        authenticated.value = false;
+        save();
+
+        // Redirect to main page
+        window.location.href = '/';
+      } catch (error: any) {
+        console.error(error);
+      }
+    }
   }
 
   function save() {

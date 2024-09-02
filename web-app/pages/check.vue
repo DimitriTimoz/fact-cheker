@@ -5,7 +5,7 @@
     <div class="container lg mx-auto center max-w-screen-lg p-2">
         <h1 class="text-title font-bold text-2xl">Fact Checker</h1>
         <p> Enter a statement to find relevant reviews and references to verify it thanks to the newspapers.</p>
-        <textarea class="text-text bg-transparent center w-full mt-5 p-2 outline-blue-500 border-2 border-primary rounded-lg mb-2"
+        <textarea class="text-text bg-transparent center w-full mt-5 p-2 outline-blue-600 border-2 border-primary rounded-lg mb-2"
                     placeholder="The statement..."
                     v-model="value">
         </textarea>
