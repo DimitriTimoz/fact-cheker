@@ -151,6 +151,7 @@ class Article:
         return {
             "title": self.title,
             "url": self.url,
+            "description": self.content[:256],
         }
         
 def google_search(query: str, cse_id: str, num=10):
