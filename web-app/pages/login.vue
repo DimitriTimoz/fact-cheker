@@ -4,21 +4,21 @@
       <h2 class="auth-title">Log in</h2>
     </div>
     <form class="container form flex flex-col mx-auto">
-      <label class="input-label"  for="email"><b>Email</b></label>
+      <label class="input-label mb-2"  for="email"><b>Email</b></label>
       <input
         v-model="user.email"
         type="email"
-        class="text-input"
+        class="text-input mb-2"
         placeholder="Enter Email"
         name="email"
         required
       />
 
-      <label class="input-label" for="psw"><b>Password</b></label>
+      <label class="input-label mb-2" for="psw"><b>Password</b></label>
       <input
         v-model="user.password"
         type="password"
-        class="text-input"
+        class="text-input mb-2"
         placeholder="Enter Password"
         name="psw"
         required

@@ -1,17 +1,33 @@
 <template>
     <div class="flex flex-col h-screen justify-between">
-        <header class="bg-background text-text border-b border-primary p-2">
-            <nav class="flex flex-wrap justify-between items-center" aria-label="Global">
-                <div class="flex items-center ml-2 text-xl">
-                    <img src="~/assets/logo.svg" alt="logo" class="h-10 w-10 mr-2" />
-                    <nuxt-link v-if="authenticated" to="/check/">Fact cheker</nuxt-link>
-                    <nuxt-link v-else to="/">Fact cheker</nuxt-link>
+        <header class="bg-white text-gray-800 border-b border-blue-200 p-4">
+            <nav class="flex flex-wrap justify-between items-center container mx-auto" aria-label="Global">
+                <div class="flex items-center text-xl">
+                    <img src="~/assets/logo.svg" alt="logo" class="h-10 w-10 mr-3" />
+                    <nuxt-link :to="authenticated ? '/check/' : '/'" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                    Fact Checker
+                    </nuxt-link>
                 </div>
-                <div class="flex items-center" v-if="!authenticated" >
-                    <nuxt-link to="/login" class="text-text hover:scale-110 transition-all font-medium rounded-lg text-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2">Login</nuxt-link>
-                </div>
+                <div class="flex items-center space-x-4">
+                <template v-if="authenticated">
+                    <nuxt-link to="/search" class="text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg">
+                        Search Engine
+                    </nuxt-link>
+                    <nuxt-link to="/check" class="text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg">
+                        Checker
+                    </nuxt-link>
+                    <button @click="logUserOut" class="bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium rounded-lg text-lg px-5 py-2">
+                        Logout
+                    </button>
+                    </template>
+                    <template v-else>
+                    <nuxt-link to="/login" class="bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium rounded-lg text-lg px-5 py-2">
+                        Login
+                    </nuxt-link>
+                </template>
+              </div>
             </nav>
-        </header>
+          </header>
         <main class="mainContent mb-auto">
             <slot />
         </main>
@@ -27,4 +43,5 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 
 const { authenticated } = storeToRefs(useAuthStore());
+const { logUserOut } = useAuthStore();
 </script>
