@@ -15,7 +15,7 @@ def search_view(request):
     if not query:
         return Response({"error": "A query is required"}, status=status.HTTP_400_BAD_REQUEST)
     
-    results = meili_search(query, 10)
+    results = meili_search(query, 20)
     results = [result.__dict__() for result in results]
 
     return Response(results, status=status.HTTP_200_OK)
