@@ -39,5 +39,5 @@ export const useUserStore = defineStore('userStore', () => {
         }
         updateUser();
     }
-    return { userdata, updateUser }
+    return { userdata, updateUser, load}
 })

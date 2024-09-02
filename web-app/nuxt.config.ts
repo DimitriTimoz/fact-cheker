@@ -13,6 +13,9 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
   ],
+  plugins: [
+    '~/plugins/initUser.ts',
+  ],
   app: {
     head: {
       title: "Fact cheker",
