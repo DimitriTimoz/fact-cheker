@@ -9,7 +9,7 @@
                 <input
                     v-model="user.email"
                     type="email"
-                    class="text-input"
+                    class="text-input mb-2"
                     placeholder="Enter email"
                     name="email"
                     required
@@ -19,7 +19,7 @@
                 <input
                     v-model="user.password"
                     type="password"
-                    class="text-input"
+                    class="text-input mb-2"
                     placeholder="Enter Password"
                     name="psw"
                     required
@@ -30,7 +30,7 @@
                 <input
                     v-model="user.confirmPassword"
                     type="password"
-                    class="text-input"
+                    class="text-input mb-2"
                     placeholder="Confirm Password"
                     name="confirm-psw"
                     required
