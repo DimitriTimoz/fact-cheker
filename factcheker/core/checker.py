@@ -148,10 +148,11 @@ class Article:
         self.content = content
 
     def __dict__(self):
+        suffix = "..." if len(self.content) > 256 else ""
         return {
             "title": self.title,
             "url": self.url,
-            "description": self.content[:256],
+            "description": self.content[:256] + suffix,
         }
         
 def google_search(query: str, cse_id: str, num=10):

@@ -9,13 +9,20 @@
         <div v-if="message" class="mt-5 alert" role="alert">
             <span>{{ message }}</span>
         </div>
-        <div v-if="newspapers" class="mt-5 container list-none">
-            <ul class="column flex-row border-2 rounded-md p-2 shadow-sm">
-                <li v-for="newspaper in newspapers" class="mt-5">
-                    <div class="flex flew-row border-b">
-                        <a :href="newspaper.url" target="_blank" class="text-text">{{newspaper.title}}</a>
+        <div v-if="newspapers.length > 0" class="mt-10 container mx-auto px-4">
+            <ul class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5">
+                <li v-for="newspaper in newspapers" class="bg-white border border-gray-200 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex flex-col space-y-4">
+                        <a :href="newspaper.url" target="_blank" class="text-xl font-semibold text-blue-600 hover:text-blue-800 truncate" :title="newspaper.title">
+                            {{ newspaper.title }}
+                        </a>
+                        <a :href="newspaper.url" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 truncate" :title="newspaper.url">
+                            {{ newspaper.url }}
+                        </a>
+                        <p class="text-gray-600 line-clamp-3">
+                            {{ newspaper.description }}
+                        </p>
                     </div>
-                    <p class="text-text" >{{ newspaper.description }}</p>
                 </li>
             </ul>
         </div>
