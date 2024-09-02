@@ -12,5 +12,14 @@ export default defineNuxtConfig({
   },
   modules: [
     '@pinia/nuxt',
-  ]
+  ],
+  app: {
+    head: {
+      title: "Fact cheker",
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
+    }
+  }
 })
