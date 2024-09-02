@@ -94,7 +94,6 @@ async function check(e: Event) {
     console.log("Check function triggered"); // Log the function call
 
     try {
-        clear();
         fetching.value = true;
         const response = await $apifetch('/api/check/', {
             method: 'POST',
