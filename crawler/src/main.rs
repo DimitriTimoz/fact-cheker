@@ -51,7 +51,7 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
             .select(selector)
             .filter(|element| {
                 let name = element.value().name();
-                name != "style" && name != "script"
+                name != "style" && name != "script" && name != "img"
             })
             .flat_map(|el| el.text())
             .collect::<Vec<_>>();
@@ -89,7 +89,7 @@ async fn main() {
         .iter()
         .map(|newspaper| Newspaper::from(newspaper.clone()))
         .collect::<Vec<_>>();
-
+    let mut fetched = 0;
     for paper in newspapers {
         let mut website = Website::new(paper.get_url());
         website.with_limit(50_000);
@@ -105,13 +105,16 @@ async fn main() {
                     if papers.len() >= MAX_PAPERS {
                         indexing(papers.as_slice()).await;
                         papers.clear();
+                        fetched += MAX_PAPERS;
                     }
                 }
             }
             if !papers.is_empty() {
                 indexing(papers.as_slice()).await;
+                fetched += papers.len();
             }
             println!("Done scraping {}", paper.get_title());
+            println!("Fetched {} papers", fetched);
         });
         website.crawl().await; 
         website.unsubscribe();

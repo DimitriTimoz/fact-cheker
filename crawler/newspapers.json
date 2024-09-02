@@ -2,50 +2,105 @@
     {
         "title": "Le Monde",
         "url": "https://www.lemonde.fr/",
-        "selectors" : [
-            "article",
-            "#post-container"
-        ]
-    }, 
-    {
-        "title": "The Guardian",
-        "url": "https://www.theguardian.com/",
-        "selectors" : [
-            "article"
-        ]
-    }, 
-    {
-        "title": "The New York Times",
-        "url": "https://www.nytimes.com/",
-        "selectors" : [
+        "selectors": [
             "article"
         ]
     },
     {
-        "title": "The Whashington Post",
+        "title": "The Guardian",
+        "url": "https://www.theguardian.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "The New York Times",
+        "url": "https://www.nytimes.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "The Washington Post",
         "url": "https://www.washingtonpost.com/",
-        "selectors" : [
+        "selectors": [
             "article"
         ]
     },
     {
         "title": "Le Point",
         "url": "https://www.lepoint.fr/",
-        "selectors" : [
+        "selectors": [
             "article"
         ]
     },
     {
         "title": "The Independent",
         "url": "https://www.independent.co.uk/",
-        "selectors" : [
+        "selectors": [
             "article"
         ]
-    }, 
+    },
     {
         "title": "The Times",
         "url": "https://www.thetimes.co.uk/",
-        "selectors" : [
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "Der Spiegel",
+        "url": "https://www.spiegel.de/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "El País",
+        "url": "https://elpais.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "La Repubblica",
+        "url": "https://www.repubblica.it/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "The Japan Times",
+        "url": "https://www.japantimes.co.jp/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "The Globe and Mail",
+        "url": "https://www.theglobeandmail.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "Al Jazeera",
+        "url": "https://www.aljazeera.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "The Sydney Morning Herald",
+        "url": "https://www.smh.com.au/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "Haaretz",
+        "url": "https://www.haaretz.com/",
+        "selectors": [
             "article"
         ]
     }
