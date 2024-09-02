@@ -23,11 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ir45!7+b#z8#4w$-qs*oy+%22o+l@3dci_w0#e44t6fn&7(%yu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv('DEBUG', 'True'))
+DEBUG = bool(os.getenv('DEBUG', True))
 print(os.getenv('DEBUG'))
 ALLOWED_HOSTS = [
     "backend",
-    "localhost" if DEBUG else "admin.fact-cheker.com",
+    "localhost",
+    "admin.fact-cheker.com"
 ]
 
 # Application definition
