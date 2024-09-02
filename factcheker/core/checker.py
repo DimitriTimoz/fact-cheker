@@ -147,6 +147,12 @@ class Article:
         # TODO: fetch content if not provided
         self.content = content
 
+    def __dict__(self):
+        return {
+            "title": self.title,
+            "url": self.url,
+        }
+        
 def google_search(query: str, cse_id: str, num=10):
     #url = f"https://www.googleapis.com/customsearch/v1"
     #params = {
@@ -202,8 +208,6 @@ def fact_check(statement: str):
         def process_result(result: Article):
             print(result.url)
             content = result.content
-            if not content:
-                content = get_website_content(result.url)
             if len(content) < 50:
                 print("Content too short", len(content))
                 return None
