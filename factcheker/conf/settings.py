@@ -27,7 +27,7 @@ DEBUG = bool(os.getenv('DEBUG', 'True'))
 print(os.getenv('DEBUG'))
 ALLOWED_HOSTS = [
     "backend",
-    "localhost" if DEBUG else "admin.factchecker.com",
+    "localhost" if DEBUG else "admin.fact-cheker.com",
 ]
 
 # Application definition
