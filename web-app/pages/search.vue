@@ -1,11 +1,11 @@
 <template>
     <div class="container flex mx-auto max-w-6xl flex-col items-center mt-4">
         <h2 class="text-text font-bold text-2xl m-6">Search among newspapers</h2>
-        <div class="flex rounded-2xl w-4/5">
+        <form class="flex rounded-2xl w-4/5" @submit.prevent="searchNewspaper">
             <input type="text" v-model="search" placeholder="Search for a newspaper" 
                 class="text-input w-full h-14" />
             <button @click="searchNewspaper" class="btn">Search</button>    
-        </div>
+        </form>
         <div v-if="message" class="mt-5 alert" role="alert">
             <span>{{ message }}</span>
         </div>
