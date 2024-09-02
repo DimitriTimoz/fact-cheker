@@ -4,7 +4,8 @@
             <nav class="flex flex-wrap justify-between items-center" aria-label="Global">
                 <div class="flex items-center ml-2 text-xl">
                     <img src="~/assets/logo.svg" alt="logo" class="h-10 w-10 mr-2" />
-                    <nuxt-link to="/">Fact cheker</nuxt-link>
+                    <nuxt-link v-if="authenticated" to="/check/">Fact cheker</nuxt-link>
+                    <nuxt-link v-else to="/">Fact cheker</nuxt-link>
                 </div>
                 <div class="flex items-center" v-if="!authenticated" >
                     <nuxt-link to="/login" class="text-text hover:scale-110 transition-all font-medium rounded-lg text-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2">Login</nuxt-link>
