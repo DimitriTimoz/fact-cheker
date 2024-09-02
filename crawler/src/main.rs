@@ -51,6 +51,7 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
             .select(selector)
             .filter(|element| {
                 let name = element.value().name();
+                // TODO: check this works
                 name != "style" && name != "script" && name != "img"
             })
             .flat_map(|el| el.text())
