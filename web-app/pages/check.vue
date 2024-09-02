@@ -12,21 +12,28 @@
         <button v-if="!fetching" class="btn" @click="check">Check</button>
         <button v-if="!fetching" class="btn ml-2" @click="clear">Clear</button>
 
-        <li v-for="review in review.reviews" class="mt-5 container list-none">
-            <ul class="column flex-row border-2 rounded-md p-2 shadow-sm">
-                <div class="flex flew-row border-b">
-                    <svg v-if="review.state" class="w-3.5 h-3.5 me-2 my-auto text-green-500 dark:text-green-400 flex-shrink-0 center" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                    </svg>
-                    <svg v-else class="flex-shrink-0 inline w-4 h-4 me-3 text-red-600 my-auto" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <a :href="review.url" target="_blank" class="text-text">{{review.url}}</a>
+        <li v-for="review in review.reviews" class="mt-6 list-none">
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
+              <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-3">
+                <div class="flex items-center">
+                  <svg v-if="review.state" class="w-5 h-5 mr-2 text-green-500 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                  </svg>
+                  <svg v-else class="w-5 h-5 mr-2 text-red-500 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                  </svg>
+                  <span class="font-semibold text-lg text-gray-800">
+                    {{ review.state ? 'Vérifié' : 'Non vérifié' }}
+                  </span>
                 </div>
-                <p class="text-text" >{{ review.review }}</p>
-            </ul>
-        </li>
-
+                <a :href="review.url" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm truncate max-w-xs">
+                  {{ review.url }}
+                </a>
+              </div>
+              <p class="text-gray-700 leading-relaxed">{{ review.review }}</p>
+            </div>
+          </li>
+        
         <div v-if="review.fetched" class="mt-5 container border-2 rounded-md p-2 shadow-sm">
             <p class="text-text">{{ review.conclusion }}</p>
         </div>
