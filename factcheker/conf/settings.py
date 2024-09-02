@@ -60,7 +60,9 @@ CORS_ALLOW_ALL_ORIGINS = True # Only for development
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000', # Only for development
     os.getenv('FRONTEND_URL', 'http://localhost:8000'), 
-    "https://fact-cheker.com"
+    "https://fact-cheker.com",
+    "https://www.fact-cheker.com",
+    "https://admin.fact-cheker.com",
 ]
 ROOT_URLCONF = 'conf.urls'
 
