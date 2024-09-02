@@ -93,8 +93,8 @@ async fn main() {
     let mut fetched = 0;
     for paper in newspapers {
         let mut website = Website::new(paper.get_url());
-        website.with_limit(50_000);
-        website.with_delay(10);
+        website.with_limit(20_000);
+        website.with_delay(15);
         let mut rx2 = website.subscribe(1024).unwrap(); 
         println!("Scraping {}", paper.get_title());
         tokio::spawn(async move {
