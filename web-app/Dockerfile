@@ -19,4 +19,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Command to start the application
-CMD ["npm", "run", "preview"]
+CMD ["node ", "./server/index.mjs"]
