@@ -49,20 +49,6 @@
         ]
     },
     {
-        "title": "Der Spiegel",
-        "url": "https://www.spiegel.de/",
-        "selectors": [
-            "article"
-        ]
-    },
-    {
-        "title": "El País",
-        "url": "https://elpais.com/",
-        "selectors": [
-            "article"
-        ]
-    },
-    {
         "title": "La Repubblica",
         "url": "https://www.repubblica.it/",
         "selectors": [
@@ -100,6 +86,13 @@
     {
         "title": "Haaretz",
         "url": "https://www.haaretz.com/",
+        "selectors": [
+            "article"
+        ]
+    },
+    {
+        "title": "Euronews",
+        "url": "https://www.euronews.com/",
         "selectors": [
             "article"
         ]
