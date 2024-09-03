@@ -185,6 +185,7 @@ def google_search(query: str, cse_id: str, num=10):
   
 
 def meili_search(query: str, num=10):
+    # TODO: handle errors
     response = index.search(query, {"limit": num})
     articles = []
     for hit in response["hits"]:
