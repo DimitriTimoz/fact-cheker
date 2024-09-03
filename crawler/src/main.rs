@@ -1,14 +1,20 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use futures::stream::FuturesUnordered;
+use futures::StreamExt;
 use newspaper::{Newspaper, NewspaperModel, Paper};
 use scraper::Selector;
 use spider::page::Page;
 use spider::tokio;
-use spider::utils::{pause, resume};
 use spider::website::Website;
 
 use meilisearch_sdk::client::*;
+use tokio::sync::mpsc::error::SendError;
+use tokio::sync::{mpsc, Semaphore};
 
 pub mod newspaper;
+
 
 fn hash_to_string(hash: u64) -> String {
     format!("{:x}", hash)  
@@ -82,6 +88,81 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
     None
 }
 
+const MAX_CONCURRENT_PROCESSING: usize = 10;
+const QUEUE_SIZE: usize = 1000;
+
+async fn scrape_website(paper: Newspaper, website: &mut Website) {
+    let (tx, mut rx) = mpsc::channel(QUEUE_SIZE);
+    let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PROCESSING));
+    let mut rx2 = website.subscribe(QUEUE_SIZE).unwrap();
+
+    // Tâche de réception
+    let receive_task = tokio::spawn(async move {
+        loop {
+            match rx2.recv().await {
+                Ok(page) => {
+                    match tx.send(page).await {
+                        Ok(_) => {}
+                        Err(e) => {
+                            println!("Channel error: {}", e);
+                            break;
+                        }
+                        
+                    }
+                }
+                Err(e) => {
+                    println!("Error: {}", e);
+                    break;
+                }
+            }
+        }
+    });
+
+    // Tâche de traitement
+    let process_task = tokio::spawn(async move {
+        let mut futures = FuturesUnordered::new();
+        let mut papers = Vec::new();
+        let mut fetched = 0;
+
+        loop {
+            tokio::select! {
+                Some(page) = rx.recv() => {
+                    let sem_clone = semaphore.clone();
+                    let paper_clone = paper.clone();
+                    futures.push(async move {
+                        let _permit = sem_clone.acquire().await.unwrap();
+                        process_page(page, &paper_clone).await
+                    });
+                }
+                Some(processed_paper) = futures.next() => {
+                    if let Some(paper) = processed_paper {
+                        papers.push(paper);
+                        if papers.len() >= 80 {
+                            indexing(papers.as_slice()).await;
+                            fetched += papers.len();
+                            papers.clear();
+                        }
+                    }
+                }
+                else => break,
+            }
+        }
+
+        if !papers.is_empty() {
+            indexing(papers.as_slice()).await;
+            fetched += papers.len();
+        }
+        println!("Fetched total of {} papers", fetched);
+    });
+
+    website.crawl().await;
+    website.unsubscribe();
+
+    receive_task.await.unwrap();
+    process_task.await.unwrap();
+}
+
+
 #[tokio::main]
 async fn main() {
     let file = std::fs::File::open("newspapers.json").unwrap();
@@ -92,39 +173,13 @@ async fn main() {
         i += 1;
         let newspapers = newspapers
             .iter()
-            .map(|newspaper| Newspaper::from(newspaper.clone()))
-            .collect::<Vec<_>>();
-        let mut fetched = 0;
+            .map(|newspaper| Newspaper::from(newspaper.clone()));
+
         for paper in newspapers {
             let mut website = Website::new(paper.get_url());
-            let crawl_id  = website.crawl_id.as_str().to_owned();
-            website.with_limit(10_000*i);
-            let mut rx2 = website.subscribe(8).unwrap(); 
+            website.with_limit((10_000 * i).min(100_000));
             println!("Scraping {}", paper.get_title());
-            tokio::spawn(async move {
-                const MAX_PAPERS: usize = 80;
-                let mut papers = Vec::with_capacity(MAX_PAPERS);
-                while let Ok(page) = rx2.recv().await {
-                    pause(&crawl_id).await;
-                    if let Some(paper) = process_page(page, &paper).await {
-                        papers.push(paper);
-                        if papers.len() >= MAX_PAPERS {
-                            indexing(papers.as_slice()).await;
-                            papers.clear();
-                            fetched += MAX_PAPERS;
-                        }
-                    }
-                    resume(&crawl_id).await;
-                }
-                if !papers.is_empty() {
-                    indexing(papers.as_slice()).await;
-                    fetched += papers.len();
-                }
-                println!("Done scraping {}", paper.get_title());
-                println!("Fetched {} papers", fetched);
-            });
-            website.crawl().await; 
-            website.unsubscribe();
+            scrape_website(paper, &mut website).await;
         }
         tokio::time::sleep(std::time::Duration::from_secs(60*60)).await;
     }
