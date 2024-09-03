@@ -1,6 +1,5 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
 use futures::stream::FuturesUnordered;
 use futures::StreamExt;
 use newspaper::{Newspaper, NewspaperModel, Paper};
@@ -10,7 +9,6 @@ use spider::tokio;
 use spider::website::Website;
 
 use meilisearch_sdk::client::*;
-use tokio::sync::mpsc::error::SendError;
 use tokio::sync::{mpsc, Semaphore};
 
 pub mod newspaper;
