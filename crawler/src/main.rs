@@ -3,6 +3,7 @@ use newspaper::{Newspaper, NewspaperModel, Paper};
 use scraper::Selector;
 use spider::page::Page;
 use spider::tokio;
+use spider::utils::{pause, resume};
 use spider::website::Website;
 
 use meilisearch_sdk::client::*;
@@ -96,15 +97,15 @@ async fn main() {
         let mut fetched = 0;
         for paper in newspapers {
             let mut website = Website::new(paper.get_url());
+            let crawl_id  = website.crawl_id.as_str().to_owned();
             website.with_limit(10_000*i);
-            website.with_delay(15);
-            let mut rx2 = website.subscribe(1024).unwrap(); 
+            let mut rx2 = website.subscribe(8).unwrap(); 
             println!("Scraping {}", paper.get_title());
             tokio::spawn(async move {
                 const MAX_PAPERS: usize = 80;
                 let mut papers = Vec::with_capacity(MAX_PAPERS);
                 while let Ok(page) = rx2.recv().await {
-                    let time = std::time::Instant::now();
+                    pause(&crawl_id).await;
                     if let Some(paper) = process_page(page, &paper).await {
                         papers.push(paper);
                         if papers.len() >= MAX_PAPERS {
@@ -112,10 +113,8 @@ async fn main() {
                             papers.clear();
                             fetched += MAX_PAPERS;
                         }
-                        //if std::time::Instant::now().duration_since(time).as_secs() < 10 {
-                        //    tokio::time::sleep(std::time::Duration::from_secs(10)).await;
-                        //s}
                     }
+                    resume(&crawl_id).await;
                 }
                 if !papers.is_empty() {
                     indexing(papers.as_slice()).await;
