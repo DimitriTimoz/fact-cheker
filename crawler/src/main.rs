@@ -42,7 +42,6 @@ async fn indexing(papers: &[Paper]) {
 }
 
 async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
-
     let html = page.get_html();
     if page.is_empty() {
         return None;
