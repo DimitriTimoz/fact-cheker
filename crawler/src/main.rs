@@ -86,38 +86,47 @@ async fn main() {
     let file = std::fs::File::open("newspapers.json").unwrap();
     let newspapers: Vec<NewspaperModel> = serde_json::from_reader(file).unwrap();
 
-    let newspapers = newspapers
-        .iter()
-        .map(|newspaper| Newspaper::from(newspaper.clone()))
-        .collect::<Vec<_>>();
-    let mut fetched = 0;
-    for paper in newspapers {
-        let mut website = Website::new(paper.get_url());
-        website.with_limit(20_000);
-        website.with_delay(15);
-        let mut rx2 = website.subscribe(1024).unwrap(); 
-        println!("Scraping {}", paper.get_title());
-        tokio::spawn(async move {
-            const MAX_PAPERS: usize = 80;
-            let mut papers = Vec::with_capacity(MAX_PAPERS);
-            while let Ok(page) = rx2.recv().await {
-                if let Some(paper) = process_page(page, &paper).await {
-                    papers.push(paper);
-                    if papers.len() >= MAX_PAPERS {
-                        indexing(papers.as_slice()).await;
-                        papers.clear();
-                        fetched += MAX_PAPERS;
+    let mut i = 0;
+    loop {
+        i += 1;
+        let newspapers = newspapers
+            .iter()
+            .map(|newspaper| Newspaper::from(newspaper.clone()))
+            .collect::<Vec<_>>();
+        let mut fetched = 0;
+        for paper in newspapers {
+            let mut website = Website::new(paper.get_url());
+            website.with_limit(10_000*i);
+            website.with_delay(15);
+            let mut rx2 = website.subscribe(1024).unwrap(); 
+            println!("Scraping {}", paper.get_title());
+            tokio::spawn(async move {
+                const MAX_PAPERS: usize = 80;
+                let mut papers = Vec::with_capacity(MAX_PAPERS);
+                while let Ok(page) = rx2.recv().await {
+                    let time = std::time::Instant::now();
+                    if let Some(paper) = process_page(page, &paper).await {
+                        papers.push(paper);
+                        if papers.len() >= MAX_PAPERS {
+                            indexing(papers.as_slice()).await;
+                            papers.clear();
+                            fetched += MAX_PAPERS;
+                        }
+                        //if std::time::Instant::now().duration_since(time).as_secs() < 10 {
+                        //    tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+                        //s}
                     }
                 }
-            }
-            if !papers.is_empty() {
-                indexing(papers.as_slice()).await;
-                fetched += papers.len();
-            }
-            println!("Done scraping {}", paper.get_title());
-            println!("Fetched {} papers", fetched);
-        });
-        website.crawl().await; 
-        website.unsubscribe();
+                if !papers.is_empty() {
+                    indexing(papers.as_slice()).await;
+                    fetched += papers.len();
+                }
+                println!("Done scraping {}", paper.get_title());
+                println!("Fetched {} papers", fetched);
+            });
+            website.crawl().await; 
+            website.unsubscribe();
+        }
+        tokio::time::sleep(std::time::Duration::from_secs(60*60)).await;
     }
 }
