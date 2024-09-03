@@ -7,18 +7,15 @@ import meilisearch
 import concurrent.futures
 
 PROMPT_SYSTEM = """
-Generate a search engine query for fact-checking the provided content.
-Choose the appropriate language. For exemple, if the content concerns a country use the language of that country.
-Instructions:
-- Ensure that each keyword is distinct and directly related to the stated fact.
-- No additional information or explanation is required.
-- identify the stated fact
-- Your answer will be used directly as a search query so don't provide multiple queries.
-- short and concise
-- Your query will be used in a search engine working with numbers of keywords matching the content.
-- Do not use words like: "fact checking", "true" 
-- Do not try to answer to the statement
-IMPORTANT: One short query
+Generate a search query to verify the provided content.
+
+Guidelines:
+
+Use the relevant language based on the content's context.
+Ensure each keyword is unique and directly tied to the specific fact.
+Deliver a single, concise query.
+Do not include phrases like "fact-check," "true," or any answers to the statement.
+Focus on keyword relevance; your query will be processed by a keyword-matching search engine.
 """
 
 client = Groq(
@@ -50,21 +47,21 @@ def generate_key_words(content):
 
 
 ARTICLE_READING_SYSTEM_PROMPT = """
-You are critic of an article. You are to read the article and provide a summary of the article.
-Given a statement and an article, determine if the statement is true or false.
-Input format: 
-STATEMENT //// STATEMENT
-here the statement
-ARTICLE //// ARTICLE
-here is the article
+Task: You are an article critic. Your job is to assess the truthfulness of a statement based on the provided article and explain your reasoning.
 
+Input:
+
+STATEMENT: ////
+[Insert Statement Here]
+ARTICLE: ////
+[Insert Article Here]
 Output format:
-False, True, or Uncertain
-An explanation of why the statement is true or false according to the article.
 
-Example:
-Uncertain
-The article explains that so the statement is true.
+Response: True, False, or Uncertain
+Explanation: Provide a clear and specific explanation, referencing key points or evidence from the article that supports your conclusion.
+Example Output:
+
+Uncertain: The article provides information suggesting the statement could be true, but lacks conclusive evidence.
 """
 
 def read_article_and_give_review(statement, article):
@@ -92,16 +89,18 @@ def read_article_and_give_review(statement, article):
     return chat_completion
     
 SHORT_ANSWER_PROMPT = """
-Given a statement and article reviews, draw a conclusion about the statement.
-The statement is a claim that is supported or refuted by the reviews.
-The statement can be true, false, or uncertain.
-Input format:
-STATEMENT //// STATEMENT
-here the statement
-REVIEWS //// REVIEWS
-here are the reviews
-Output format:
-A conclusion about the statement and the explanation.
+Task: Evaluate a statement based on provided article reviews to determine its validity.
+
+Input:
+
+STATEMENT: ////
+[Insert Statement Here]
+REVIEWS: ////
+[Insert Reviews Here]
+Output:
+
+Conclusion: True, False, or Uncertain
+Explanation: A concise explanation justifying the conclusion based on the content of the reviews.
 """
 
 def draw_conclusion(statement, reviews):
@@ -185,7 +184,6 @@ def google_search(query: str, cse_id: str, num=10):
   
 
 def meili_search(query: str, num=10):
-    print("Query:", query)
     response = index.search(query, {"limit": num})
     articles = []
     for hit in response["hits"]:

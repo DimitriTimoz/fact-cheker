@@ -61,7 +61,7 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
             })
             .flat_map(|el| el.text())
             .collect::<Vec<_>>();
-        if texts.is_empty() {
+        if texts.len() != 1{
             continue;
         }
 
