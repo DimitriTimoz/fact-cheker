@@ -42,6 +42,7 @@ async fn indexing(papers: &[Paper]) {
 }
 
 async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
+
     let html = page.get_html();
     if page.is_empty() {
         return None;
@@ -60,7 +61,7 @@ async fn process_page(page: Page, paper: &Newspaper) -> Option<Paper> {
             })
             .flat_map(|el| el.text())
             .collect::<Vec<_>>();
-        if texts.len() != 1{
+        if texts.is_empty(){
             continue;
         }
 
