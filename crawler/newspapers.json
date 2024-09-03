@@ -49,13 +49,6 @@
         ]
     },
     {
-        "title": "La Repubblica",
-        "url": "https://www.repubblica.it/",
-        "selectors": [
-            "article"
-        ]
-    },
-    {
         "title": "The Japan Times",
         "url": "https://www.japantimes.co.jp/",
         "selectors": [
@@ -70,22 +63,8 @@
         ]
     },
     {
-        "title": "Al Jazeera",
-        "url": "https://www.aljazeera.com/",
-        "selectors": [
-            "article"
-        ]
-    },
-    {
         "title": "The Sydney Morning Herald",
         "url": "https://www.smh.com.au/",
-        "selectors": [
-            "article"
-        ]
-    },
-    {
-        "title": "Haaretz",
-        "url": "https://www.haaretz.com/",
         "selectors": [
             "article"
         ]
