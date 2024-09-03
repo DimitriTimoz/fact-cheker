@@ -22,7 +22,7 @@ services:
   backend:
     build: ./factcheker
     container_name: django_backend
-    command: sh start.sh
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./factcheker:/app
     ports:
