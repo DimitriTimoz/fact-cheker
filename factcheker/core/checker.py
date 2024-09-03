@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 import meilisearch
 import concurrent.futures
 
-PROMPT_SYSTEM = """
+PROMPT_SYSTEM = """ You are an article critic.
 Generate a search query to verify the provided content.
 
 Guidelines:
@@ -59,9 +59,10 @@ Output format:
 
 Response: True, False, or Uncertain
 Explanation: Provide a clear and specific explanation, referencing key points or evidence from the article that supports your conclusion.
-Example Output:
 
-Uncertain: The article provides information suggesting the statement could be true, but lacks conclusive evidence.
+Example Output:
+Uncertain
+The article provides information suggesting the statement could be true, but lacks conclusive evidence.
 """
 
 def read_article_and_give_review(statement, article):
@@ -88,7 +89,7 @@ def read_article_and_give_review(statement, article):
     chat_completion = chat_completion.choices[0].message.content
     return chat_completion
     
-SHORT_ANSWER_PROMPT = """
+SHORT_ANSWER_PROMPT = """ You are a fact-checker.
 Task: Evaluate a statement based on provided article reviews to determine its validity.
 
 Input:
