@@ -207,7 +207,6 @@ def fact_check(statement: str):
 
         # Function to process each search result
         def process_result(result: Article):
-            print(result.url)
             content = result.content
             if len(content) < 50:
                 print("Content too short", len(content))

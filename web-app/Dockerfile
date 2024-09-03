@@ -1,3 +1,4 @@
+# Use an official Node.js image as the base image
 FROM node:22
 
 # Set the working directory
@@ -19,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Command to start the application
-CMD ["node ", "./server/index.mjs"]
+CMD ["node", "./server/index.mjs"]
